@@ -1,0 +1,258 @@
+package com.deimos.compilador.services.analysis;
+
+import com.deimos.compilador.model.errors.CompilationError;
+import com.deimos.compilador.model.errors.ErrorType;
+import com.deimos.compilador.view.CompiladorUI;
+import java_cup.runtime.Symbol;
+import java.util.List;
+
+parser code
+{:
+    private Symbol s;
+    
+    public void syntax_error(Symbol s){
+        this.s = s;
+    }
+
+    public Symbol getS(){
+        return this.s;
+    }
+:}
+
+action code {:
+
+private void syntaxError(String id, int line, String message){
+    List<CompilationError> errors = CompiladorUI.compilationErrors.getErrors();
+    CompilationError syntaxError = new CompilationError(id, message, ErrorType.SYNTAX, line);
+    errors.add(syntaxError);
+}
+
+private static final String NOT_A_STATEMENT_ERROR_CODE = "003";
+private static final String NOT_A_DECLARATION_ERROR_CODE = "004";
+private static final String EXPECTED_SEMI_COLON_ERROR_CODE = "005";
+private static final String MISSING_CLOSING_BRACKET_ERROR_CODE = "006";
+private static final String MAIN_CLASS_EXPECTED_ERROR_CODE = "007";
+private static final String INIT_FUNCTION_EXPECTED_ERROR_CODE = "008";
+private static final String ITERATE_FUNCTION_EXPECTED_ERROR_CODE = "008";
+private static final String EXPECTED_IDENTIFIER_ERROR_CODE = "009";
+private static final String EXPECTED_CLASS_KEYWORD_ERROR_CODE = "010";
+private static final String VALUE_EXPECTED_ERROR_CODE = "011";
+
+private static final String NOT_A_STATEMENT_MESSAGE = "Not a statement";
+private static final String NOT_A_DECLARATION_MESSAGE = "Not a declaration";
+private static final String EXPECTED_SEMI_COLON_MESSAGE = "<;> Expected";
+private static final String MISSING_CLOSING_BRACKET_MESSAGE = "<}> Expected";
+private static final String MAIN_CLASS_EXPECTED_MESSAGE = "<main> Class Expected";
+private static final String INIT_FUNCTION_EXPECTED_MESSAGE = "<init> Function Expected";
+private static final String ITERATE_FUNCTION_EXPECTED_MESSAGE = "<iterate> Function Expected";
+private static final String EXPECTED_IDENTIFIER_MESSAGE = "<identifier> Expected";
+private static final String EXPECTED_CLASS_KEYWORD_MESSAGE = "<class> Keyword Expected";
+private static final String VALUE_EXPECTED_MESSAGE = "<value> Expected";
+
+:}
+
+terminal
+    ABSTRACT, 
+    BOOLEAN,
+    BREAK, 
+    CLASS,
+
+    INIT,
+    ITERATE,
+    IF,
+    ELSE,
+    FOR, 
+    WHILE,
+
+    INT,
+    STRING, 
+    FLOAT,
+    
+    IDENTIFIER, 
+    INTEGER_LITERAL,
+    STRING_LITERAL,
+
+    ADDITION, 
+    SUBTRACTION, 
+    MULTIPLICATION,
+
+    DIVISION, 
+    MODULUS, 
+    INCREMENT,
+    DECREMENT, 
+    ASSIGNMENT, 
+    ASSIGNMENT_ADDITION,
+    ASSIGNMENT_SUBTRACTION, 
+    ASSIGNMENT_MULTIPLICATION, 
+    ASSIGNMENT_DIVISION,
+    ASSIGNMENT_MODULUS, 
+    EQUAL_TO, 
+    NOT_EQUAL,
+    GREATER_THAN, 
+    LESS_THAN, 
+    GREATHER_THAN_OR_EQUAL_TO,
+    LESS_THAN_OR_EQUAL_TO,
+
+    AND,
+    OR,
+
+    SEMI,
+    LBRACKET,
+    RBRACKET,
+    LPAR,
+    RPAR,
+
+    INVALID_NUMBER,
+    ERROR
+;
+
+non terminal
+    mainClass,
+    mainClassError,
+
+    mainClassSignature,
+    mainClassSignatureError,
+
+    mainClassBody,
+    mainClassBodyError,
+
+    mainInit,
+    initBody,
+    mainIteration,
+    iterationBody,
+
+    stmts,
+    stmtError,
+
+    declaration,
+    declarationType,
+    declarationBody,
+    declarationBodyError,
+    declarationAssingment,
+    declarationValue
+;
+
+start with mainClass;
+
+/* ---- mainClass ---- */
+
+mainClass ::=
+        mainClassSignature mainClassBody 
+    |   mainClassError
+;
+
+mainClassError ::=
+        mainClassBody:e
+            {: syntaxError(EXPECTED_CLASS_KEYWORD_ERROR_CODE, eleft+1, EXPECTED_CLASS_KEYWORD_MESSAGE); 
+               syntaxError(EXPECTED_IDENTIFIER_ERROR_CODE, eleft+1, EXPECTED_IDENTIFIER_MESSAGE); :}
+    |   error:e
+            {: syntaxError(MAIN_CLASS_EXPECTED_ERROR_CODE, eleft+1, MAIN_CLASS_EXPECTED_MESSAGE); :}
+ ;
+
+mainClassSignature ::=
+         CLASS IDENTIFIER 
+    |    mainClassSignatureError
+;
+
+mainClassSignatureError ::=
+        IDENTIFIER:e
+            {: syntaxError(EXPECTED_CLASS_KEYWORD_ERROR_CODE, eleft+1, EXPECTED_CLASS_KEYWORD_MESSAGE); :} 
+    |   CLASS:e
+            {: syntaxError(EXPECTED_IDENTIFIER_ERROR_CODE, eleft+1, EXPECTED_IDENTIFIER_MESSAGE); :}
+;
+
+mainClassBody ::=
+        LBRACKET mainInit mainIteration RBRACKET
+    |   LBRACKET mainIteration mainInit RBRACKET
+    |   mainClassBodyError
+;
+
+mainClassBodyError ::=
+        LBRACKET:e mainInit RBRACKET
+            {: syntaxError(ITERATE_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, ITERATE_FUNCTION_EXPECTED_MESSAGE); :}
+    |   LBRACKET:e mainIteration RBRACKET
+            {: syntaxError(INIT_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, INIT_FUNCTION_EXPECTED_MESSAGE); :}
+    |   LBRACKET:e RBRACKET
+            {: syntaxError(ITERATE_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, ITERATE_FUNCTION_EXPECTED_MESSAGE);
+               syntaxError(INIT_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, INIT_FUNCTION_EXPECTED_MESSAGE); :}
+;
+
+/* ---- mainInit ---- */
+
+mainInit ::=
+        INIT LPAR RPAR LBRACKET initBody
+;
+
+initBody ::=
+        stmts initBody
+    |   RBRACKET
+;
+
+/* ---- mainIteration ---- */
+
+mainIteration ::=
+        ITERATE LPAR RPAR LBRACKET iterationBody
+;
+
+iterationBody ::=
+        stmts iterationBody
+    |   RBRACKET
+;
+
+/* ---- stmts ---- */
+
+stmts ::=
+        declaration SEMI
+    |   stmtError
+;
+
+stmtError ::=
+        declaration:e
+            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :} 
+    |   error:e
+            {: syntaxError(NOT_A_STATEMENT_ERROR_CODE, eleft+1, NOT_A_STATEMENT_MESSAGE); :} 
+;
+
+/* ---- declaration ---- */
+
+declaration ::=
+        declarationType declarationBody
+;
+
+declarationType ::=
+        INT
+    |   STRING
+    |   FLOAT
+;
+
+declarationBody ::=
+        IDENTIFIER declarationAssingment declarationValue
+    |   IDENTIFIER
+    |   declarationBodyError
+;
+
+declarationBodyError ::=
+        IDENTIFIER declarationAssingment:e
+            {: syntaxError(VALUE_EXPECTED_ERROR_CODE, eleft+1, VALUE_EXPECTED_MESSAGE); :}
+    |   declarationAssingment:e declarationValue
+            {: syntaxError(EXPECTED_IDENTIFIER_ERROR_CODE, eleft+1, EXPECTED_IDENTIFIER_MESSAGE);
+               syntaxError(NOT_A_DECLARATION_ERROR_CODE, eleft+1, NOT_A_DECLARATION_MESSAGE); :}
+    |   declarationAssingment:e
+            {: syntaxError(EXPECTED_IDENTIFIER_ERROR_CODE, eleft+1, EXPECTED_IDENTIFIER_MESSAGE);
+               syntaxError(VALUE_EXPECTED_ERROR_CODE, eleft+1, VALUE_EXPECTED_MESSAGE);
+               syntaxError(NOT_A_DECLARATION_ERROR_CODE, eleft+1, NOT_A_DECLARATION_MESSAGE); :}
+;
+
+declarationAssingment ::=
+        ASSIGNMENT
+    |   ASSIGNMENT_ADDITION
+    |   ASSIGNMENT_SUBTRACTION
+    |   ASSIGNMENT_MULTIPLICATION
+    |   ASSIGNMENT_DIVISION
+    |   ASSIGNMENT_MODULUS
+;
+
+declarationValue ::=
+        INTEGER_LITERAL
+    |   STRING_LITERAL    
+;
