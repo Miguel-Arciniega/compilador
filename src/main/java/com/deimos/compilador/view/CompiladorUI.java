@@ -28,11 +28,11 @@ import com.deimos.compilador.utils.FileHandler;
 import com.deimos.compilador.services.theme.LookAndFeelService;
 import com.deimos.compilador.utils.editor.TextLineNumber;
 import com.deimos.compilador.model.errors.CompilationErrors;
+import com.deimos.compilador.model.variables.Variables;
 import com.deimos.compilador.services.ErrorHandlerService;
 import com.deimos.compilador.utils.editor.CodeEditorUtils;
 import com.deimos.compilador.utils.editor.FontUitls;
 import javax.swing.JRadioButtonMenuItem;
-import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import com.deimos.compilador.utils.EditorColors;
 
@@ -62,9 +62,6 @@ import lombok.extern.java.Log;
 public class CompiladorUI extends javax.swing.JFrame {
         
     private final FileHandler lookAndFeelFile;
-    private final AnalysisService analyzer;
-    
-    public static CompilationErrors compilationErrors; 
     
     /**
      * 
@@ -82,7 +79,6 @@ public class CompiladorUI extends javax.swing.JFrame {
         */
         log.info("Inicializando componentes\n");
         initComponents();    
-        initErrors(); 
         initCodeEditor();
         
         /**
@@ -102,7 +98,6 @@ public class CompiladorUI extends javax.swing.JFrame {
         */
         this.setLocationRelativeTo(null);
         new LookAndFeelService(this, this.lookAndFeelFile, textPane_editor).setLookAndFeel();
-        this.analyzer = new AnalysisService();
         this.setTitle(WINDOW_INITIAL_TITLE);
         
         // Agrega los números de linea al editor   
@@ -794,25 +789,25 @@ public class CompiladorUI extends javax.swing.JFrame {
         
         // Si el código no ha cambiado y el código está guardado,
         // se inicia la compilación
-        if(CodeEditorUtils.hasChanged == false && CodeEditorUtils.currentFile != null){
-            
-            // Se inicializan los errores
-            initErrors();
+        if(CodeEditorUtils.hasChanged == false && CodeEditorUtils.currentFile != null){           
             
             // Se crea una instancia del manejador de errores
-            ErrorHandlerService errorHandler = new ErrorHandlerService();
+            ErrorHandlerService errorHandler = new ErrorHandlerService(new CompilationErrors());
             
             // Se obtinene el código del editor
             final String code = textPane_editor.getText();
+            
+            // Se crea una instancia del servicio para analisis
+            AnalysisService analysisService = new AnalysisService(new Variables());
                 
             // Se inicia el analisis
-            analyzer.start(code);
+            analysisService.start(code);
             
             /** 
              *  Se construye la salida de consola
              *  Si hay errores se agregan los mensajes de error
              */
-            StringBuilder output = errorHandler.start(compilationErrors, code);                    
+            StringBuilder output = errorHandler.start(code);
 
             /**  
             *   Si hay errores:
@@ -870,16 +865,6 @@ public class CompiladorUI extends javax.swing.JFrame {
         lookAndFeelFile.write(theme);
         new LookAndFeelService(this, this.lookAndFeelFile, textPane_editor).setLookAndFeel();
         radioMenuBehavior(radioMenu);
-        }
-        
-    /**
-     *
-     * Inicializa CompilationErrors POJO
-     * 
-     */
-    private void initErrors(){
-        compilationErrors = new CompilationErrors();  
-        compilationErrors.setErrors(new ArrayList<>());
     }
     
     /**

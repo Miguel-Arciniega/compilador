@@ -2,7 +2,8 @@ package com.deimos.compilador.services.analysis;
 
 import com.deimos.compilador.model.errors.CompilationError;
 import com.deimos.compilador.model.errors.ErrorType;
-import com.deimos.compilador.view.CompiladorUI;
+import com.deimos.compilador.services.ErrorHandlerService;
+import com.deimos.compilador.model.variables.Variables;
 import java_cup.runtime.Symbol;
 import java.util.List;
 
@@ -22,7 +23,7 @@ parser code
 action code {:
 
 private void syntaxError(String id, int line, String message){
-    List<CompilationError> errors = CompiladorUI.compilationErrors.getErrors();
+    List<CompilationError> errors = ErrorHandlerService.compilationErrors.getErrors();
     CompilationError syntaxError = new CompilationError(id, message, ErrorType.SYNTAX, line);
     errors.add(syntaxError);
 }
@@ -48,7 +49,6 @@ private static final String ITERATE_FUNCTION_EXPECTED_MESSAGE = "<iterate> Funct
 private static final String EXPECTED_IDENTIFIER_MESSAGE = "<identifier> Expected";
 private static final String EXPECTED_CLASS_KEYWORD_MESSAGE = "<class> Keyword Expected";
 private static final String VALUE_EXPECTED_MESSAGE = "<value> Expected";
-
 :}
 
 terminal
@@ -221,7 +221,7 @@ declaration ::=
 
 declarationType ::=
         INT
-    |   STRING
+    |   STRING 
     |   FLOAT
 ;
 
@@ -254,5 +254,5 @@ declarationAssingment ::=
 
 declarationValue ::=
         INTEGER_LITERAL
-    |   STRING_LITERAL    
+    |   STRING_LITERAL
 ;

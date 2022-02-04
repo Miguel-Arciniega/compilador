@@ -26,13 +26,14 @@ package com.deimos.compilador.services;
 import com.deimos.compilador.model.errors.CompilationErrors;
 import com.deimos.compilador.model.errors.CompilationError;
 import com.deimos.compilador.utils.CollectionUtils;
+import java.util.logging.Level;
+import lombok.extern.java.Log;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.deimos.compilador.utils.StringConstants.BLANK_SPACE;
 import static com.deimos.compilador.utils.StringConstants.NEW_LINE;
-import java.util.Arrays;
-import java.util.logging.Level;
-import lombok.extern.java.Log;
 
 /**
  *
@@ -42,6 +43,12 @@ import lombok.extern.java.Log;
 public class ErrorHandlerService {
     
     private boolean errorState = false;
+    public static CompilationErrors compilationErrors;
+    
+    public ErrorHandlerService(final CompilationErrors compilationErrors){
+        compilationErrors.setErrors(new ArrayList<>());
+        this.compilationErrors = compilationErrors;
+    }
     
     /**
     * 
@@ -58,7 +65,7 @@ public class ErrorHandlerService {
     * @param compilationErrors POJO that has the errors
     * @return output
     */
-    public StringBuilder start(final CompilationErrors compilationErrors, String code){
+    public StringBuilder start(final String code){
         
         // Se incializa la salida de consola
         StringBuilder output = new StringBuilder();     
@@ -103,7 +110,7 @@ public class ErrorHandlerService {
             
             /** 
              * Se agregan los mensajes errores los errores y se agrega
-             * el mensaje de compilaci?n fallida  a la salida de consola
+             * el mensaje de compilacion fallida  a la salida de consola
              */       
             int errorCount = errors.size();
             
@@ -135,7 +142,7 @@ public class ErrorHandlerService {
                 .append("ERRORS");
         }
         
-        // Si no hay errores se agrega el mensaje de compilaci?n exitosa
+        // Si no hay errores se agrega el mensaje de compilacion exitosa
         if(!this.errorState){
             output
                 .append(BLANK_SPACE)

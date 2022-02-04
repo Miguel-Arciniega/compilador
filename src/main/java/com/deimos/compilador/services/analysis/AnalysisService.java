@@ -25,8 +25,9 @@ package com.deimos.compilador.services.analysis;
 
 import com.deimos.compilador.model.errors.CompilationError;
 import com.deimos.compilador.model.errors.ErrorType;
+import com.deimos.compilador.model.variables.Variables;
+import com.deimos.compilador.services.ErrorHandlerService;
 import java.io.StringReader;
-import com.deimos.compilador.view.CompiladorUI;
 import java.util.List;
 import java.util.logging.Level;
 import lombok.extern.java.Log;
@@ -42,6 +43,12 @@ public class AnalysisService {
     
     private static final String PARSER_FAIL_ERROR_CODE = "000";
     
+    public static Variables variables;         
+    
+    public AnalysisService(final Variables variables){
+        this.variables = variables;
+    }
+    
     public void start(String code){   
         
         // Inicializa los analizadores sintáctico y léxico
@@ -51,13 +58,12 @@ public class AnalysisService {
             // Ejecuta el analizador sintáctico y léxico
             log.info("Iniciando el analisis\n");
             s.parse();
-            
         } catch (NoClassDefFoundError | Exception e) {
             
-            // Si hay un error que no entre en ninguna gramatica, se agrega el error de parseo
+            // Si no encuentra ninguna gramatica válida, se agrega el error de parseo
             log.log(Level.SEVERE, "{0}\n", e.toString());
             
-            List<CompilationError> errors = CompiladorUI.compilationErrors.getErrors();
+            List<CompilationError> errors = ErrorHandlerService.compilationErrors.getErrors();
             CompilationError syntaxError = new CompilationError(PARSER_FAIL_ERROR_CODE, "An Exception Ocurred", "FATAL", ErrorType.FATAL, 1);
             errors.add(syntaxError);
         }

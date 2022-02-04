@@ -1,7 +1,7 @@
 /* JFlex example: partial Java language lexer specification */
 
 package com.deimos.compilador.services.analysis;
-import com.deimos.compilador.view.CompiladorUI;
+import com.deimos.compilador.services.ErrorHandlerService;
 import com.deimos.compilador.model.errors.ErrorType;
 import com.deimos.compilador.model.errors.CompilationError;
 import java.util.List;
@@ -29,7 +29,7 @@ import java_cup.runtime.Symbol;
   }
 
     private void addLexicalError(String id, int line, String message, String content){
-       List<CompilationError> errors = CompiladorUI.compilationErrors.getErrors();
+       List<CompilationError> errors = ErrorHandlerService.compilationErrors.getErrors();
        CompilationError lexicalError = new CompilationError(id, message, content, ErrorType.LEXICAL, line);
        errors.add(lexicalError); 
     }
@@ -97,7 +97,7 @@ Number = 0 | [1-9]{Digit}*
 
   // --- Identifier
 
-  {Identifier}                   { return symbol(sym.IDENTIFIER); }
+  {Identifier}                   { return symbol(sym.IDENTIFIER, yytext()); }
 
   // --- Number
 
