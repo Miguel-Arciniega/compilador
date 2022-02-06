@@ -1,28 +1,15 @@
 /* JFlex example: partial Java language lexer specification */
 
-package com.deimos.compilador.services.paint;
-
-import com.deimos.compilador.model.painter.PaintRequest;
-import com.deimos.compilador.utils.EditorColors;
-import java.awt.Color;
-import java.util.List;
+package com.deimos.compilador.services;
 
 %%
-%class LexerPainter
+%class LexerSem
 %type Tokens
 %unicode
 %full
 %line
 %char
 %column
-
-%{
-  private void addPaintRequest(int posIni, int posFin, Color color){
-    List<PaintRequest> paintRequests = PaintService.paintRequestList.getPaintRequests();
-    PaintRequest paintRequest = new PaintRequest(posIni, posFin, color);
-    paintRequests.add(paintRequest);
-  }
-%}
 
 /* --------------------- RegEx --------------------- */
 
@@ -52,10 +39,6 @@ Identifier = {Letter}+ ({Letter} | {Digit})*
 
 Number = 0 | [1-9]{Digit}*
 
-// --- Pin
-
-Pin = [A-Z]{Digit}
-
 /* ------------------ Tokens/Patterns ------------------- */
 
 %%
@@ -65,16 +48,9 @@ Pin = [A-Z]{Digit}
 "init"                         
 | "iterate"                    { addPaintRequest(yychar, yylength(), EditorColors.METHODS); }
 
-// --- Functions
-
-"start"            { addPaintRequest(yychar, yylength(), EditorColors.FUNCTIONS); }
-"wait"            { addPaintRequest(yychar, yylength(), EditorColors.FUNCTIONS); }
-"read"               { addPaintRequest(yychar, yylength(), EditorColors.FUNCTIONS); }
-"print"           { addPaintRequest(yychar, yylength(), EditorColors.FUNCTIONS); }
-
 // --- Keywords
 
-"program"              
+"class"              
 | "if"                
 | "else"               
 | "for"                
@@ -88,8 +64,7 @@ Pin = [A-Z]{Digit}
 
 // --- Number
 
-{Pin}
-| {Number}                     { addPaintRequest(yychar, yylength(), EditorColors.NUMBERS); }
+{Number}                       { addPaintRequest(yychar, yylength(), EditorColors.NUMBERS); }
 
 // --- String
 

@@ -42,7 +42,7 @@ public class LookAndFeelFactory {
      * @param theme  theme enum to filter LookAndFeel generation
      * @return LookAndFeel
      */
-    public LookAndFeel getLookAndFeel(Theme theme) throws UnexpectedException{
+    public LookAndFeel getLookAndFeel(Theme theme){
         switch (theme) {
             case MATERIAL_LIGHT:
                 return new MaterialLight();
@@ -55,7 +55,7 @@ public class LookAndFeelFactory {
             case MOONLIGHT:
                 return new Moonlight();
             default:
-                throw new UnexpectedException(UNEXPECTED_THEME_EXCEPTION_MESSAGE);
+                return new MaterialLight();
         }
     }
 }

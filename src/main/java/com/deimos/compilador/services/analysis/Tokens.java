@@ -21,25 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.deimos.compilador.utils;
-
-import java.awt.Color;
+package com.deimos.compilador.services.analysis;
 
 /**
  *
  * @author Deimos
  */
-public class EditorColors {
-    public static final Color KEYWORDS = new Color(204, 120, 50);
-    public static final Color METHODS = new Color(255, 198, 109);
-    public static final Color FUNCTIONS = new Color(152, 118, 170);
-    public static final Color DEFAULT = new Color(169, 183, 198);
-    public static final Color NUMBERS = new Color(104, 151, 187);
-    public static final Color STRING = new Color(106, 135, 89);
-    public static final Color SEMICOLON = new Color(204, 120, 50);
-    public static final Color COMMENTS = Color.GRAY;
-    public static final Color ERROR = new Color(255, 0, 0);
+public enum Tokens {
     
-    public static final Color CONSOLE_ERROR = Color.red;
-    public static final Color CONSOLE_SUCCESS = new Color(25, 111, 61);
 }

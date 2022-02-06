@@ -63,39 +63,38 @@ public class LookAndFeelService {
         }
         
         public void setLookAndFeel() {
-            try{
-                String fileContent = Optional.ofNullable(fileHandler.read()).orElse(""); 
-                if(!fileHandler.fileExist() || fileContent.isEmpty()){
-                    fileHandler.write(MATERIAL_LIGHT);
-                }
-                
-                switch (fileContent) {
-                    case MATERIAL_DARK:
-                        new LookAndFeelFactory().getLookAndFeel(Theme.MATERIAL_DARK).execute(this.frame);
-                        new LinePainter(jTextPane).setColor(new Color(35,35,35));
-                        break;
-                    case MATERIAL_LIGHT:
-                        new LookAndFeelFactory().getLookAndFeel(Theme.MATERIAL_LIGHT).execute(this.frame);  
-                        new LinePainter(jTextPane).setColor(new Color(233, 239, 248));
-                        break;
-                    case ONE_DARK:
-                        new LookAndFeelFactory().getLookAndFeel(Theme.ONE_DARK).execute(this.frame);
-                       new LinePainter(jTextPane).setColor(new Color(50,55,75));
-                        break;
-                    case MONOKAI:
-                        new LookAndFeelFactory().getLookAndFeel(Theme.MONOKAI).execute(this.frame);
-                        new LinePainter(jTextPane).setColor(new Color(42,42,46));
-                        break;
-                    case MOONLIGHT:
-                        new LookAndFeelFactory().getLookAndFeel(Theme.MOONLIGHT).execute(this.frame);
-                        new LinePainter(jTextPane).setColor(new Color(45,45,84));
-                        break;
-                    default:
-                        throw new UnexpectedThemeException(UNEXPECTED_THEME_EXCEPTION_MESSAGE);
-                }     
-               
-            }catch (UnexpectedThemeException | UnexpectedException ex){
-                Logger.getLogger(CLASS_NAME).log(Level.SEVERE, UNEXPECTED_THEME_EXCEPTION_MESSAGE, ex);
+            
+            String fileContent = Optional.ofNullable(fileHandler.read()).orElse(""); 
+            if(!fileHandler.fileExist() || fileContent.isEmpty()){
+                fileHandler.write(MATERIAL_LIGHT);
             }
+
+            switch (fileContent) {
+                case MATERIAL_DARK:
+                    new LookAndFeelFactory().getLookAndFeel(Theme.MATERIAL_DARK).execute(this.frame);
+                    new LinePainter(jTextPane).setColor(new Color(35,35,35));
+                    break;
+                case MATERIAL_LIGHT:
+                    new LookAndFeelFactory().getLookAndFeel(Theme.MATERIAL_LIGHT).execute(this.frame);  
+                    new LinePainter(jTextPane).setColor(new Color(233, 239, 248));
+                    break;
+                case ONE_DARK:
+                    new LookAndFeelFactory().getLookAndFeel(Theme.ONE_DARK).execute(this.frame);
+                   new LinePainter(jTextPane).setColor(new Color(50,55,75));
+                    break;
+                case MONOKAI:
+                    new LookAndFeelFactory().getLookAndFeel(Theme.MONOKAI).execute(this.frame);
+                    new LinePainter(jTextPane).setColor(new Color(42,42,46));
+                    break;
+                case MOONLIGHT:
+                    new LookAndFeelFactory().getLookAndFeel(Theme.MOONLIGHT).execute(this.frame);
+                    new LinePainter(jTextPane).setColor(new Color(45,45,84));
+                    break;
+                default:
+                    fileHandler.write(MATERIAL_LIGHT);
+                    new LookAndFeelFactory().getLookAndFeel(Theme.MOONLIGHT).execute(this.frame);
+                    new LinePainter(jTextPane).setColor(new Color(45,45,84));
+                    break;
+            }     
         }                 
 }

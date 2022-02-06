@@ -89,10 +89,10 @@ public class ErrorHandlerService {
             CollectionUtils.errorQuickSort(errors, begin, end);
             
             /** 
-             * Se obtienen las lineas de c?digo separadas por salto de linea
+             * Se obtienen las lineas de codigo separadas por salto de linea
              * Y se eliminan los espacios de m?s 
              */
-            List<String> codeLines = Arrays.asList(code.split("\\s*\n\\s*"));
+            List<String> codeLines = Arrays.asList(code.split("\n"));
 
             /** 
              * Se coloca el contenido de la linea de c?digo correspondiente en 
@@ -103,14 +103,13 @@ public class ErrorHandlerService {
                     error.setErrorContent(codeLines.get(error.getErrorLine()-1));
                 }
                 error.setErrorContent(error.getErrorContent().trim());
-                error.setErrorContent(error.getErrorContent().replaceAll("\n", ""));
                 errores.append(error.toString());
                 errores.append(NEW_LINE);
             });
             
             /** 
              * Se agregan los mensajes errores los errores y se agrega
-             * el mensaje de compilacion fallida  a la salida de consola
+             * el mensaje de compilacion fallida a la salida de consola
              */       
             int errorCount = errors.size();
             

@@ -25,7 +25,6 @@ package com.deimos.compilador.services.analysis;
 
 import com.deimos.compilador.model.errors.CompilationError;
 import com.deimos.compilador.model.errors.ErrorType;
-import com.deimos.compilador.model.variables.Variables;
 import com.deimos.compilador.services.ErrorHandlerService;
 import java.io.StringReader;
 import java.util.List;
@@ -42,12 +41,6 @@ import lombok.extern.java.Log;
 public class AnalysisService {
     
     private static final String PARSER_FAIL_ERROR_CODE = "000";
-    
-    public static Variables variables;         
-    
-    public AnalysisService(final Variables variables){
-        this.variables = variables;
-    }
     
     public void start(String code){   
         

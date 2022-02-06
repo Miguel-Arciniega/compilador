@@ -71,6 +71,10 @@ Identifier = {Letter}+ ({Letter} | {Digit})*
 
 Number = 0 | [1-9]{Digit}*
 
+// --- Pin
+
+Pin = [A-Z]{Digit}
+
 /* ------------------ Tokens/Patterns ------------------- */
 
 %state STRING
@@ -78,7 +82,8 @@ Number = 0 | [1-9]{Digit}*
 %%
 
 // --- Keywords
-<YYINITIAL> "class"              { return symbol(sym.CLASS); }
+
+<YYINITIAL> "program"              { return symbol(sym.PROGRAM); }
 <YYINITIAL> "init"               { return symbol(sym.INIT); }
 <YYINITIAL> "iterate"            { return symbol(sym.ITERATE); }
 
@@ -93,7 +98,17 @@ Number = 0 | [1-9]{Digit}*
 <YYINITIAL> "int"                { return symbol(sym.INT); }
 <YYINITIAL> "string"             { return symbol(sym.STRING); }
 <YYINITIAL> "float"              { return symbol(sym.FLOAT); }
+
+<YYINITIAL> "start"              { return symbol(sym.START); }
+<YYINITIAL> "wait"               { return symbol(sym.WAIT); }
+<YYINITIAL> "read"               { return symbol(sym.READ); }
+<YYINITIAL> "print"              { return symbol(sym.PRINT); }
+
 <YYINITIAL> {
+
+  // --- Pin
+
+  {Pin}                          { return symbol(sym.PIN, yytext()); }
 
   // --- Identifier
 

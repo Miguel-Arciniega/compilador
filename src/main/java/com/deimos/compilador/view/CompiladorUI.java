@@ -28,7 +28,6 @@ import com.deimos.compilador.utils.FileHandler;
 import com.deimos.compilador.services.theme.LookAndFeelService;
 import com.deimos.compilador.utils.editor.TextLineNumber;
 import com.deimos.compilador.model.errors.CompilationErrors;
-import com.deimos.compilador.model.variables.Variables;
 import com.deimos.compilador.services.ErrorHandlerService;
 import com.deimos.compilador.utils.editor.CodeEditorUtils;
 import com.deimos.compilador.utils.editor.FontUitls;
@@ -133,9 +132,6 @@ public class CompiladorUI extends javax.swing.JFrame {
 
         jFrame1 = new javax.swing.JFrame();
         panel_contenedor = new javax.swing.JPanel();
-        jSplitPane1 = new javax.swing.JSplitPane();
-        scroll_panel_tree = new javax.swing.JScrollPane();
-        jTree1 = new javax.swing.JTree();
         splitPane_main = new javax.swing.JSplitPane();
         scrollPane_editor = new javax.swing.JScrollPane();
         textPane_editor = new javax.swing.JTextPane()  {
@@ -207,24 +203,6 @@ public class CompiladorUI extends javax.swing.JFrame {
         setBackground(new java.awt.Color(102, 102, 102));
         setIconImage(new ImageIcon("src/main/java/resources/icon.png").getImage());
 
-        jSplitPane1.setDividerLocation(240);
-        jSplitPane1.setDividerSize(20);
-
-        scroll_panel_tree.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jTree1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Workspace");
-        javax.swing.tree.DefaultMutableTreeNode treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Nuevo.scl");
-        treeNode1.add(treeNode2);
-        jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
-        jTree1.setFocusable(false);
-        jTree1.setMaximumSize(new java.awt.Dimension(104, 120));
-        jTree1.setMinimumSize(new java.awt.Dimension(20, 120));
-        jTree1.setShowsRootHandles(true);
-        scroll_panel_tree.setViewportView(jTree1);
-
-        jSplitPane1.setLeftComponent(scroll_panel_tree);
-
         splitPane_main.setDividerLocation(425);
         splitPane_main.setDividerSize(20);
         splitPane_main.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
@@ -266,20 +244,21 @@ public class CompiladorUI extends javax.swing.JFrame {
 
         splitPane_main.setBottomComponent(scrollPane_console);
 
-        jSplitPane1.setRightComponent(splitPane_main);
-
         javax.swing.GroupLayout panel_contenedorLayout = new javax.swing.GroupLayout(panel_contenedor);
         panel_contenedor.setLayout(panel_contenedorLayout);
         panel_contenedorLayout.setHorizontalGroup(
             panel_contenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_contenedorLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jSplitPane1)
-                .addGap(20, 20, 20))
+                .addGap(30, 30, 30)
+                .addComponent(splitPane_main)
+                .addGap(30, 30, 30))
         );
         panel_contenedorLayout.setVerticalGroup(
             panel_contenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
+            .addGroup(panel_contenedorLayout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addComponent(splitPane_main, javax.swing.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
+                .addGap(9, 9, 9))
         );
 
         toolbar_buttons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -445,7 +424,7 @@ public class CompiladorUI extends javax.swing.JFrame {
         pane_toolbarLayout.setHorizontalGroup(
             pane_toolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pane_toolbarLayout.createSequentialGroup()
-                .addComponent(toolbar_buttons, javax.swing.GroupLayout.DEFAULT_SIZE, 1200, Short.MAX_VALUE)
+                .addComponent(toolbar_buttons, javax.swing.GroupLayout.DEFAULT_SIZE, 1325, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
         pane_toolbarLayout.setVerticalGroup(
@@ -644,7 +623,7 @@ public class CompiladorUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(pane_toolbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panel_contenedor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(25, 25, 25))
         );
@@ -798,7 +777,7 @@ public class CompiladorUI extends javax.swing.JFrame {
             final String code = textPane_editor.getText();
             
             // Se crea una instancia del servicio para analisis
-            AnalysisService analysisService = new AnalysisService(new Variables());
+            AnalysisService analysisService = new AnalysisService();
                 
             // Se inicia el analisis
             analysisService.start(code);
@@ -906,8 +885,6 @@ public class CompiladorUI extends javax.swing.JFrame {
     private javax.swing.JToolBar.Separator jSeparator13;
     private javax.swing.JToolBar.Separator jSeparator14;
     private javax.swing.JToolBar.Separator jSeparator15;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTree jTree1;
     private javax.swing.JMenuBar menuBar_principal;
     private javax.swing.JMenuItem menuItem_copy;
     private javax.swing.JMenuItem menuItem_cut;
@@ -929,7 +906,6 @@ public class CompiladorUI extends javax.swing.JFrame {
     private javax.swing.JRadioButtonMenuItem radioMenu_One_Dark;
     private javax.swing.JScrollPane scrollPane_console;
     private javax.swing.JScrollPane scrollPane_editor;
-    private javax.swing.JScrollPane scroll_panel_tree;
     private javax.swing.JSplitPane splitPane_main;
     private javax.swing.JTextPane textPane_console;
     private javax.swing.JTextPane textPane_editor;
