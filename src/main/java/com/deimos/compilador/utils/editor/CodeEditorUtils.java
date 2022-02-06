@@ -231,58 +231,6 @@ public class CodeEditorUtils {
         }       
     }
     
-        /**
-     *
-     * Open File     */
-    public static void actionOpenFolder() {
-        if (hasChanged == true) {
-            int option = JOptionPane.showConfirmDialog(jFrame, "¿Desea guardar los cambios?");
- 
-            switch (option) {
-                case JOptionPane.YES_OPTION:     
-                    actionSave();               
-                    break;
-                case JOptionPane.CANCEL_OPTION: 
-                    return;    
-            }           
-        }       
- 
-        JFileChooser fileChooser = getJFileChooser(); 
- 
-        int state = fileChooser.showOpenDialog(jFrame);
-        String content, newContent;
-        
-        if (state == JFileChooser.APPROVE_OPTION) {  
-            File file = fileChooser.getSelectedFile();    
-            if (!(file.getName().endsWith(EXTENSION))) {
-                JOptionPane.showMessageDialog(null, "Solo los archivos con extensión ".concat(EXTENSION).concat(" son admitidos"));
-                actionOpen();
-                return;
-            }
-            try {
-                try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-                    newContent = bufferedReader.readLine();
-                    
-                    while ((content = bufferedReader.readLine()) != null) {
-                        newContent = newContent + "\n" + content;
-                    }
-                    
-                    jTextPaneEditor.setText(newContent);
-                }
- 
-                jFrame.setTitle(FILE_TYPE_NAME.concat(" - ").concat(file.getName()));
- 
-                currentFile = file;
-                hasChanged = false;
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(jFrame,
-                                              ex.getMessage(),
-                                              ex.toString(),
-                                              JOptionPane.ERROR_MESSAGE);
-            }
-        }       
-    }
-    
     /**
      *
      * New File     */

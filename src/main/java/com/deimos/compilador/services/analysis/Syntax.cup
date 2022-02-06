@@ -72,8 +72,12 @@ terminal
 
     START,
     WAIT,
-    READ,
     PRINT,
+    MODE,
+    A_READ,
+    A_WRITE,
+    D_READ,
+    D_WRITE,
     
     IDENTIFIER,
     PIN,
@@ -111,6 +115,7 @@ terminal
     RPAR,
 
     INVALID_NUMBER,
+    COMA,
     ERROR
 ;
 
@@ -136,11 +141,13 @@ non terminal
     stmts,
     stmtError,
 
+    assignment,
+    assignmentType,
+
     declaration,
     declarationType,
     declarationBody,
-    declarationBodyError,
-    declarationAssingment,
+    declarationAssignment,
 
     value,
     valueRead,
@@ -148,7 +155,10 @@ non terminal
 
     function,
     functionType,
-    functionBody
+    functionBody,
+    functionType2,
+    functionBody2,
+    functionError
 ;
 
 start with mainProgram;
@@ -241,12 +251,15 @@ iterationBody ::=
 
 stmts ::=
         declaration SEMI
+    |   assignment SEMI
     |   function SEMI
     |   stmtError
 ;
 
 stmtError ::=
         declaration:e
+            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}
+    |   assignment:e
             {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}
     |   function:e
             {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}
@@ -267,24 +280,21 @@ declarationType ::=
 ;
 
 declarationBody ::=
-        IDENTIFIER declarationAssingment value
-    |   IDENTIFIER
-    |   declarationBodyError
+        IDENTIFIER
+    |   IDENTIFIER declarationAssignment
 ;
 
-declarationBodyError ::=
-        IDENTIFIER declarationAssingment:e
-            {: syntaxError(VALUE_EXPECTED_ERROR_CODE, eleft+1, VALUE_EXPECTED_MESSAGE); :}
-    |   declarationAssingment:e value
-            {: syntaxError(EXPECTED_IDENTIFIER_ERROR_CODE, eleft+1, EXPECTED_IDENTIFIER_MESSAGE);
-               syntaxError(NOT_A_DECLARATION_ERROR_CODE, eleft+1, NOT_A_DECLARATION_MESSAGE); :}
-    |   declarationAssingment:e
-            {: syntaxError(EXPECTED_IDENTIFIER_ERROR_CODE, eleft+1, EXPECTED_IDENTIFIER_MESSAGE);
-               syntaxError(VALUE_EXPECTED_ERROR_CODE, eleft+1, VALUE_EXPECTED_MESSAGE);
-               syntaxError(NOT_A_DECLARATION_ERROR_CODE, eleft+1, NOT_A_DECLARATION_MESSAGE); :}
+declarationAssignment ::=
+        assignmentType value
 ;
 
-declarationAssingment ::=
+/* ---- assignment ---- */
+
+assignment ::=
+        IDENTIFIER assignmentType value
+;
+
+assignmentType ::=
         ASSIGNMENT
     |   ASSIGNMENT_ADDITION
     |   ASSIGNMENT_SUBTRACTION
@@ -292,6 +302,43 @@ declarationAssingment ::=
     |   ASSIGNMENT_DIVISION
     |   ASSIGNMENT_MODULUS
 ;
+
+/* ---- function ---- */
+
+function ::=
+        functionType functionBody
+    |   functionType2 functionBody2
+    |   functionError
+;
+
+functionType ::=
+        START
+    |   WAIT
+    |   PRINT
+;
+
+functionType2 ::=
+        MODE
+    |   A_WRITE
+    |   D_WRITE
+;
+
+functionBody ::=
+        LPAR value RPAR
+;
+
+functionBody2 ::=
+        LPAR value COMA value RPAR
+;
+
+functionError ::=
+        functionType error:e
+            {: syntaxError(FUNCTION_BODY_ERROR, eleft+1, FUNCTION_BODY_MESSAGE); :} 
+     |  functionType2 error:e
+            {: syntaxError(FUNCTION_BODY_ERROR, eleft+1, FUNCTION_BODY_MESSAGE); :} 
+;
+
+/* Values */
 
 value ::=
         INTEGER_LITERAL
@@ -301,33 +348,18 @@ value ::=
 ;
 
 valueRead ::=
-        READ LPAR PIN RPAR
+        A_READ LPAR PIN RPAR
+    |   D_READ LPAR PIN RPAR
     |   valueReadError
 ;
 
 valueReadError ::=
-        READ LPAR:e RPAR
+        A_READ LPAR:e RPAR
             {: syntaxError(VALUE_EXPECTED_ERROR_CODE, eleft+1, VALUE_EXPECTED_MESSAGE); :}
-     |  READ:e
+    |   D_READ LPAR:e RPAR
+            {: syntaxError(VALUE_EXPECTED_ERROR_CODE, eleft+1, VALUE_EXPECTED_MESSAGE); :}
+    |   A_READ:e
             {: syntaxError(FUNCTION_BODY_ERROR, eleft+1, FUNCTION_BODY_MESSAGE); :} 
-;
-
-/* ---- Funciones ---- */
-
-function ::=
-        functionType functionBody
-;
-
-/* ---- Tipo de funcion ---- */
-
-functionType ::=
-        START
-    |   WAIT
-    |   PRINT
-;
-
-functionBody ::=
-        LPAR value RPAR
-    |   error:e
+    |   D_READ:e
             {: syntaxError(FUNCTION_BODY_ERROR, eleft+1, FUNCTION_BODY_MESSAGE); :} 
 ;

@@ -444,6 +444,11 @@ public class CompiladorUI extends javax.swing.JFrame {
 
         jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         jMenuItem2.setText("New File");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         menu_file.add(jMenuItem2);
 
         jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
@@ -457,6 +462,11 @@ public class CompiladorUI extends javax.swing.JFrame {
 
         jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         jMenuItem4.setText("Save File");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
         menu_file.add(jMenuItem4);
 
         jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
@@ -696,7 +706,7 @@ public class CompiladorUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void btn_newActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_newActionPerformed
-       CodeEditorUtils.actionNew();
+        CodeEditorUtils.actionNew();
     }//GEN-LAST:event_btn_newActionPerformed
 
     private void btn_openActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_openActionPerformed
@@ -717,11 +727,11 @@ public class CompiladorUI extends javax.swing.JFrame {
     }//GEN-LAST:event_textPane_editorKeyTyped
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
+        CodeEditorUtils.actionOpen();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        // TODO add your handling code here:
+        CodeEditorUtils.actionSaveAs();
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void IncFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IncFontActionPerformed
@@ -753,6 +763,14 @@ public class CompiladorUI extends javax.swing.JFrame {
     private void menuBar_principalComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_menuBar_principalComponentHidden
         // TODO add your handling code here:
     }//GEN-LAST:event_menuBar_principalComponentHidden
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        CodeEditorUtils.actionNew();
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        CodeEditorUtils.actionSave();
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
     
     /**
      * Inicia la compilación. Llama a los métodos de analisis, generación de código y al manejador de errores

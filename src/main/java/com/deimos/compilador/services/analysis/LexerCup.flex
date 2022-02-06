@@ -45,7 +45,7 @@ import java_cup.runtime.Symbol;
 
 /* --------------------- RegEx --------------------- */
 
-Letter = [a-zA-Z]
+Letter = [a-zA-Z_]
 Digit = [0-9]
 LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]
@@ -83,7 +83,7 @@ Pin = [A-Z]{Digit}
 
 // --- Keywords
 
-<YYINITIAL> "program"              { return symbol(sym.PROGRAM); }
+<YYINITIAL> "program"            { return symbol(sym.PROGRAM); }
 <YYINITIAL> "init"               { return symbol(sym.INIT); }
 <YYINITIAL> "iterate"            { return symbol(sym.ITERATE); }
 
@@ -101,8 +101,12 @@ Pin = [A-Z]{Digit}
 
 <YYINITIAL> "start"              { return symbol(sym.START); }
 <YYINITIAL> "wait"               { return symbol(sym.WAIT); }
-<YYINITIAL> "read"               { return symbol(sym.READ); }
 <YYINITIAL> "print"              { return symbol(sym.PRINT); }
+<YYINITIAL> "mode"               { return symbol(sym.MODE); }
+<YYINITIAL> "aRead"               { return symbol(sym.A_READ); }
+<YYINITIAL> "dRead"               { return symbol(sym.D_READ); }
+<YYINITIAL> "aWrite"              { return symbol(sym.A_WRITE); }
+<YYINITIAL> "dWrite"              { return symbol(sym.D_WRITE); }
 
 <YYINITIAL> {
 
@@ -121,6 +125,7 @@ Pin = [A-Z]{Digit}
 
   // --- delimiters
 
+  ","                            { return symbol(sym.COMA); }
   ";"                            { return symbol(sym.SEMI); }
   "{"                            { return symbol(sym.LBRACKET); }
   "}"                            { return symbol(sym.RBRACKET); }

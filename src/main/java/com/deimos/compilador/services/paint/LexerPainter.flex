@@ -26,7 +26,7 @@ import java.util.List;
 
 /* --------------------- RegEx --------------------- */
 
-Letter = [a-zA-Z]
+Letter = [a-zA-Z_]
 Digit = [0-9]
 LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]
@@ -48,6 +48,10 @@ CommentContent       = ( [^*] | \*+ [^/*] )*
 
 Identifier = {Letter}+ ({Letter} | {Digit})*
 
+// --- Constant
+
+Constant = [A-Z][A-Z_]+
+
 // --- Number
 
 Number = 0 | [1-9]{Digit}*
@@ -67,10 +71,22 @@ Pin = [A-Z]{Digit}
 
 // --- Functions
 
-"start"            { addPaintRequest(yychar, yylength(), EditorColors.FUNCTIONS); }
-"wait"            { addPaintRequest(yychar, yylength(), EditorColors.FUNCTIONS); }
-"read"               { addPaintRequest(yychar, yylength(), EditorColors.FUNCTIONS); }
-"print"           { addPaintRequest(yychar, yylength(), EditorColors.FUNCTIONS); }
+"start"            
+| "wait"            
+| "aRead"
+| "dRead"                 
+| "print"
+| "mode"
+| "dWrite"   
+| "aWrite"                      { addPaintRequest(yychar, yylength(), EditorColors.FUNCTIONS); }    
+
+// --- Number
+
+{Pin}
+| "OUTPUT"
+| "HIGH"
+| "LOW"
+| {Number}                     { addPaintRequest(yychar, yylength(), EditorColors.NUMBERS); }      
 
 // --- Keywords
 
@@ -85,11 +101,6 @@ Pin = [A-Z]{Digit}
 | "int"                
 | "string"             
 | "float"                      { addPaintRequest(yychar, yylength(), EditorColors.KEYWORDS); }
-
-// --- Number
-
-{Pin}
-| {Number}                     { addPaintRequest(yychar, yylength(), EditorColors.NUMBERS); }
 
 // --- String
 
@@ -126,7 +137,8 @@ Pin = [A-Z]{Digit}
   | ">="                            
   | "<="                            
   | "&& "                          
-  | "||"                       
+  | "||"
+  | ","                       
   | {Identifier}               { addPaintRequest(yychar, yylength(), EditorColors.DEFAULT); }
 
 // --- Comments
