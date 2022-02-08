@@ -147,12 +147,10 @@ non terminal
     mainStmtListGd,
 
     mainInit,
-    mainInitError,
     mainInitSignature,
     mainInitSignatureError,
 
     mainIteration,
-    mainIterationError,
     mainIterationSignature,
     mainIterationSignatureError,
 
@@ -172,15 +170,19 @@ non terminal
 /* ---------------------------- elements ---------------------------- */
 
     block,
-    blockError,
-
+    
     stmtList,
-    stmtListError,
     stmt,
     stmtError,
 
+    expr,
+
     value
 ;
+
+/* Precedences */
+precedence left ADDITION, SUBTRACTION;
+precedence left MULTIPLICATION, DIVISION, MODULUS;
 
 start with mainProgram;
 
@@ -408,33 +410,23 @@ assignmentType ::=
 /* -- */
 
 block ::=
-        LBRACKET stmtList/*
-    |   blockError     */
+        LBRACKET stmtList RBRACKET/*
+    |   LBRACKET stmtList*/ // TODO: Arreglar para que se pueda poner sin RBRACKET y registrar el error
 ;
-/*
-blockError ::=
-        stmtList:e
-            {: syntaxError(BLOCK_ERROR_ERROR_CODE, eleft+1, BLOCK_ERROR_MESSAGE); :}  
-;*/
 
 /* -- */
 
 stmtList ::=
-        stmt stmtList
-    |   RBRACKET /*
-    |   stmtListError*/  
+        stmtList stmt
+    |   /* empty */
 ;
-/*
-stmtListError ::=
-        stmt:e
-            {: syntaxError(MISSING_CLOSING_BRACKET_ERROR_CODE, eleft+1, MISSING_CLOSING_BRACKET_MESSAGE); :}  
-;*/
 
 /* -- */
 
 stmt ::=
         declaration SEMI
     |   assignment SEMI
+    |   expr SEMI
     |   stmtError
 ;
 
@@ -442,9 +434,25 @@ stmtError ::=
         declaration:e
             {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :} 
     |   assignment:e
+            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}   
+    |   expr:e
             {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}         
     |   error:e
             {: syntaxError(NOT_A_STATEMENT_ERROR_CODE, eleft+1, NOT_A_STATEMENT_MESSAGE); :}          
+;
+
+/* -- */
+
+expr ::= 
+        expr ADDITION expr        
+    |   expr SUBTRACTION expr        
+    |   expr MULTIPLICATION expr
+    |   expr DIVISION expr
+    |   expr MODULUS expr
+    |   SUBTRACTION expr
+  	        %prec SUBTRACTION       
+    |   LPAR expr RPAR	         
+    |   INTEGER_LITERAL	                     
 ;
 
 /* -- */
