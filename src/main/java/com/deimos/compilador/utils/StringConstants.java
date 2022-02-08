@@ -38,6 +38,7 @@ public class StringConstants {
     
     // Paths para el generador de analyisis
     public static final String PROJECT_DIRECTORY = System.getProperty("user.dir").concat("\\");
+    public static final String RESOURCES_DIRECTORY = PROJECT_DIRECTORY.concat("\\src\\main\\java\\resources\\");
     public static final String ANALYSIS_DIRECTORY = PROJECT_DIRECTORY.concat("\\src\\main\\java\\com\\deimos\\compilador\\services\\analysis\\");
     public static final String UTIL_EDITOR_DIRECTORY = PROJECT_DIRECTORY.concat("\\src\\main\\java\\com\\deimos\\compilador\\services\\paint\\");
     

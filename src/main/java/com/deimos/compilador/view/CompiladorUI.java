@@ -47,6 +47,9 @@ import static com.deimos.compilador.services.theme.LookAndFeelService.MONOKAI;
 import static com.deimos.compilador.services.theme.LookAndFeelService.MOONLIGHT;
 import static com.deimos.compilador.services.theme.LookAndFeelService.ONE_DARK;
 import com.deimos.compilador.services.paint.PaintService;
+import com.deimos.compilador.utils.StringConstants;
+import java.awt.Image;
+import javax.swing.Icon;
 import javax.swing.JTextPane;
 import lombok.extern.java.Log;
 
@@ -79,6 +82,7 @@ public class CompiladorUI extends javax.swing.JFrame {
         log.info("Inicializando componentes\n");
         initComponents();    
         initCodeEditor();
+        initIcons();
         
         /**
          * Crea un instancia del manejador de archivos (FileHandler)
@@ -203,7 +207,7 @@ public class CompiladorUI extends javax.swing.JFrame {
         setBackground(new java.awt.Color(102, 102, 102));
         setIconImage(new ImageIcon("src/main/java/resources/icon.png").getImage());
 
-        splitPane_main.setDividerLocation(425);
+        splitPane_main.setDividerLocation(520);
         splitPane_main.setDividerSize(20);
         splitPane_main.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         splitPane_main.setResizeWeight(0.7);
@@ -257,7 +261,7 @@ public class CompiladorUI extends javax.swing.JFrame {
             panel_contenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_contenedorLayout.createSequentialGroup()
                 .addGap(8, 8, 8)
-                .addComponent(splitPane_main, javax.swing.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
+                .addComponent(splitPane_main, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)
                 .addGap(9, 9, 9))
         );
 
@@ -424,7 +428,7 @@ public class CompiladorUI extends javax.swing.JFrame {
         pane_toolbarLayout.setHorizontalGroup(
             pane_toolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pane_toolbarLayout.createSequentialGroup()
-                .addComponent(toolbar_buttons, javax.swing.GroupLayout.DEFAULT_SIZE, 1325, Short.MAX_VALUE)
+                .addComponent(toolbar_buttons, javax.swing.GroupLayout.DEFAULT_SIZE, 1490, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
         pane_toolbarLayout.setVerticalGroup(
@@ -862,6 +866,38 @@ public class CompiladorUI extends javax.swing.JFrame {
         lookAndFeelFile.write(theme);
         new LookAndFeelService(this, this.lookAndFeelFile, textPane_editor).setLookAndFeel();
         radioMenuBehavior(radioMenu);
+    }
+    
+    private void initIcons(){
+        Icon newIcon = new ImageIcon(StringConstants.RESOURCES_DIRECTORY + "projectAdd.png");
+        Icon openIcon = new ImageIcon(StringConstants.RESOURCES_DIRECTORY + "abrir.png");
+        Icon saveIcon = new ImageIcon(StringConstants.RESOURCES_DIRECTORY + "save.png");
+        Icon saveAsIcon = new ImageIcon(StringConstants.RESOURCES_DIRECTORY + "save-as.png");
+        
+        Icon copyIcon = new ImageIcon(StringConstants.RESOURCES_DIRECTORY + "Copiar.png");
+        Icon cutIcon = new ImageIcon(StringConstants.RESOURCES_DIRECTORY + "tijeras.png");
+        Icon pasteIcon = new ImageIcon(StringConstants.RESOURCES_DIRECTORY + "clipboard.png");
+        
+        Icon undoIcon = new ImageIcon(StringConstants.RESOURCES_DIRECTORY + "undo.png");
+        Icon redoIcon = new ImageIcon(StringConstants.RESOURCES_DIRECTORY + "redo.png");
+        Icon compileIcon = new ImageIcon(StringConstants.RESOURCES_DIRECTORY + "jugar.png");
+        
+        Image frameIcon = new ImageIcon("src/main/java/resources/icon.png").getImage();
+       
+        btn_new.setIcon(newIcon);
+        btn_open.setIcon(openIcon);
+        btn_save.setIcon(saveIcon);
+        btn_save_as.setIcon(saveAsIcon);
+        
+        btn_copy.setIcon(copyIcon);
+        btn_cut.setIcon(cutIcon);
+        btn_paste.setIcon(pasteIcon);
+        
+        btn_undo.setIcon(undoIcon);
+        btn_redo.setIcon(redoIcon);
+        btn_compilar.setIcon(compileIcon);
+        
+        this.setIconImage(frameIcon);
     }
     
     /**
