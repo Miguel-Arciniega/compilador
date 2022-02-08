@@ -24,16 +24,22 @@
 package com.deimos.compilador.view;
 
 import com.deimos.compilador.services.analysis.AnalysisService;
-import com.deimos.compilador.utils.FileHandler;
 import com.deimos.compilador.services.theme.LookAndFeelService;
-import com.deimos.compilador.utils.editor.TextLineNumber;
 import com.deimos.compilador.model.errors.CompilationErrors;
-import com.deimos.compilador.services.ErrorHandlerService;
 import com.deimos.compilador.utils.editor.CodeEditorUtils;
+import com.deimos.compilador.services.ErrorHandlerService;
+import com.deimos.compilador.utils.editor.TextLineNumber;
+import com.deimos.compilador.services.paint.PaintService;
 import com.deimos.compilador.utils.editor.FontUitls;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ImageIcon;
+import com.deimos.compilador.utils.StringConstants;
 import com.deimos.compilador.utils.EditorColors;
+import com.deimos.compilador.utils.FileHandler;
+import javax.swing.JRadioButtonMenuItem;
+import lombok.extern.java.Log;
+import javax.swing.JTextPane;
+import javax.swing.ImageIcon;
+import javax.swing.Icon;
+import java.awt.Image;
 
 import static com.deimos.compilador.utils.StringConstants.PROJECT_CONFIG;
 import static com.deimos.compilador.utils.StringConstants.PROJECT_FOLDER;
@@ -46,12 +52,6 @@ import static com.deimos.compilador.services.theme.LookAndFeelService.MATERIAL_L
 import static com.deimos.compilador.services.theme.LookAndFeelService.MONOKAI;
 import static com.deimos.compilador.services.theme.LookAndFeelService.MOONLIGHT;
 import static com.deimos.compilador.services.theme.LookAndFeelService.ONE_DARK;
-import com.deimos.compilador.services.paint.PaintService;
-import com.deimos.compilador.utils.StringConstants;
-import java.awt.Image;
-import javax.swing.Icon;
-import javax.swing.JTextPane;
-import lombok.extern.java.Log;
 
 /**
  *
@@ -64,7 +64,7 @@ import lombok.extern.java.Log;
 public class CompiladorUI extends javax.swing.JFrame {
         
     private final FileHandler lookAndFeelFile;
-    
+       
     /**
      * 
      * Crea el form para el Compiler
@@ -82,7 +82,7 @@ public class CompiladorUI extends javax.swing.JFrame {
         log.info("Inicializando componentes\n");
         initComponents();    
         initCodeEditor();
-        initIcons();
+        initIcons();    
         
         /**
          * Crea un instancia del manejador de archivos (FileHandler)
@@ -175,6 +175,8 @@ public class CompiladorUI extends javax.swing.JFrame {
         menuItem_cut = new javax.swing.JMenuItem();
         menuItem_copy = new javax.swing.JMenuItem();
         menuItem_paste = new javax.swing.JMenuItem();
+        menu_btn_undo = new javax.swing.JMenuItem();
+        menu_btn_redo = new javax.swing.JMenuItem();
         menu_view = new javax.swing.JMenu();
         menu_toolbar = new javax.swing.JCheckBoxMenuItem();
         menu_run = new javax.swing.JMenu();
@@ -237,6 +239,7 @@ public class CompiladorUI extends javax.swing.JFrame {
 
         scrollPane_console.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         scrollPane_console.setForeground(new java.awt.Color(102, 102, 102));
+        scrollPane_console.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane_console.setFocusCycleRoot(true);
 
         textPane_console.setBorder(null);
@@ -390,6 +393,11 @@ public class CompiladorUI extends javax.swing.JFrame {
         btn_undo.setMaximumSize(new java.awt.Dimension(48, 48));
         btn_undo.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         btn_undo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btn_undo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_undoActionPerformed(evt);
+            }
+        });
         toolbar_buttons.add(btn_undo);
 
         btn_redo.setIcon(new javax.swing.ImageIcon("C:\\Users\\arcin\\Documents\\NetBeansProjects\\CompiladorJava\\src\\main\\java\\resources\\redo.png")); // NOI18N
@@ -513,6 +521,24 @@ public class CompiladorUI extends javax.swing.JFrame {
             }
         });
         menu_edit.add(menuItem_paste);
+
+        menu_btn_undo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        menu_btn_undo.setText("Undo");
+        menu_btn_undo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menu_btn_undoActionPerformed(evt);
+            }
+        });
+        menu_edit.add(menu_btn_undo);
+
+        menu_btn_redo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        menu_btn_redo.setText("Redo");
+        menu_btn_redo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menu_btn_redoActionPerformed(evt);
+            }
+        });
+        menu_edit.add(menu_btn_redo);
 
         menuBar_principal.add(menu_edit);
 
@@ -695,14 +721,16 @@ public class CompiladorUI extends javax.swing.JFrame {
 
     private void textPane_editorKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textPane_editorKeyPressed
         PaintService.start(textPane_editor);
+        CodeEditorUtils.hasChanged = true;
     }//GEN-LAST:event_textPane_editorKeyPressed
 
     private void textPane_editorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textPane_editorKeyReleased
         PaintService.start(textPane_editor);
+        CodeEditorUtils.hasChanged = true;
     }//GEN-LAST:event_textPane_editorKeyReleased
 
     private void btn_redoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_redoActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_btn_redoActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
@@ -775,6 +803,18 @@ public class CompiladorUI extends javax.swing.JFrame {
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         CodeEditorUtils.actionSave();
     }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void btn_undoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_undoActionPerformed
+
+    }//GEN-LAST:event_btn_undoActionPerformed
+
+    private void menu_btn_redoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_btn_redoActionPerformed
+
+    }//GEN-LAST:event_menu_btn_redoActionPerformed
+
+    private void menu_btn_undoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_btn_undoActionPerformed
+ 
+    }//GEN-LAST:event_menu_btn_undoActionPerformed
     
     /**
      * Inicia la compilación. Llama a los métodos de analisis, generación de código y al manejador de errores
@@ -790,7 +830,7 @@ public class CompiladorUI extends javax.swing.JFrame {
         
         // Si el código no ha cambiado y el código está guardado,
         // se inicia la compilación
-        if(CodeEditorUtils.hasChanged == false && CodeEditorUtils.currentFile != null){           
+        if(CodeEditorUtils.hasChanged == false && CodeEditorUtils.currentFile != null){
             
             // Se crea una instancia del manejador de errores
             ErrorHandlerService errorHandler = new ErrorHandlerService(new CompilationErrors());
@@ -899,7 +939,7 @@ public class CompiladorUI extends javax.swing.JFrame {
         
         this.setIconImage(frameIcon);
     }
-    
+   
     /**
      *
      * Inicializa los campos de CodeEditorUtils y
@@ -911,6 +951,7 @@ public class CompiladorUI extends javax.swing.JFrame {
         CodeEditorUtils.jTextPaneEditor = this.textPane_editor;
         CodeEditorUtils.jTextPaneConsole = this.textPane_console;
         PaintService.start(textPane_editor);
+        textPane_console.setEditable(false);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -943,6 +984,8 @@ public class CompiladorUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuItem_copy;
     private javax.swing.JMenuItem menuItem_cut;
     private javax.swing.JMenuItem menuItem_paste;
+    private javax.swing.JMenuItem menu_btn_redo;
+    private javax.swing.JMenuItem menu_btn_undo;
     private javax.swing.JMenuItem menu_change_font;
     private javax.swing.JMenu menu_edit;
     private javax.swing.JMenu menu_file;

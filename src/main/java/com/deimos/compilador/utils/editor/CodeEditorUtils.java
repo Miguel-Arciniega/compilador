@@ -43,6 +43,7 @@ import static com.deimos.compilador.utils.StringConstants.FILE_TYPE_NAME;
 import static com.deimos.compilador.utils.StringConstants.PROJECT_FOLDER;
 import static com.deimos.compilador.utils.StringConstants.PROJECT_WORKSPACE;
 import static com.deimos.compilador.utils.StringConstants.USER_DOCUMENTS_FOLDER;
+import javax.swing.undo.UndoManager;
 
 /**
  * Provides Static Methods Needed to handle file operations
@@ -214,6 +215,7 @@ public class CodeEditorUtils {
                         newContent = newContent + "\n" + content;
                     }
                     
+                    jTextPaneConsole.setText(EMPTY);
                     jTextPaneEditor.setText(newContent);
                     PaintService.start(jTextPaneEditor);
                 }
