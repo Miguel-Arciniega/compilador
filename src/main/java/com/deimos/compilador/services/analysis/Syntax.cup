@@ -181,6 +181,10 @@ non terminal
     twoArgsfunctionBody,
     twoArgsfunctionBodyError,
 
+    returnFunction,
+    returnFunctionType,
+    returnFunctionBody,
+
 /* ---------------------------- elements ---------------------------- */
 
     block,
@@ -470,6 +474,21 @@ twoArgsfunctionBodyError ::=
         {: syntaxError(FUNCTION_BODY_TWO_ARGS_ERROR_CODE, eleft+1, FUNCTION_BODY_TWO_ARGS_ERROR_MESSAGE); :}  
 ;
 
+/* -- */
+
+returnFunction ::=
+    returnFunctionType returnFunctionBody
+;
+
+returnFunctionType ::=
+        A_READ
+    |   D_READ
+;
+
+returnFunctionBody ::=
+    oneArgfunctionBody
+;
+
 /* ---------------------------- elements ---------------------------- */
 
 /* -- */
@@ -527,4 +546,5 @@ value ::=
     |   STRING_LITERAL
     |   IDENTIFIER
     |   PIN
+    |   returnFunction
 ;
