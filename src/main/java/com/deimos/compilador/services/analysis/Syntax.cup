@@ -41,6 +41,7 @@ private static final String FUNCTION_BODY_ERROR_CODE = "012";
 private static final String NOT_A_FUNCTION_ERROR_CODE = "013";
 private static final String PROGRAM_BODY_ERROR_CODE = "014";
 private static final String BLOCK_ERROR_ERROR_CODE = "015";
+private static final String FUNCTION_BODY_TWO_ARGS_ERROR_CODE = "016";
 
 private static final String NOT_A_STATEMENT_MESSAGE = "Not a statement";
 private static final String NOT_A_DECLARATION_MESSAGE = "Not a declaration";
@@ -56,6 +57,7 @@ private static final String FUNCTION_BODY_MESSAGE = "Bad syntax < (value) > Expe
 private static final String NOT_A_FUNCTION_MESSAGE = "Bad syntax < function_name() > Expected";
 private static final String PROGRAM_BODY_ERROR_MESSAGE = "Bad syntax < program id { ... } > Expected";
 private static final String BLOCK_ERROR_MESSAGE = "Bad syntax < { ... } > Block Expected";
+private static final String FUNCTION_BODY_TWO_ARGS_ERROR_MESSAGE = "Bad syntax < (value, value) > Expected";
 
 :}
 
@@ -166,6 +168,18 @@ non terminal
     assignment,
     assignmentError,
     assignmentType,
+
+    function,
+
+    oneArgfunction,
+    oneArgfunctiontype,
+    oneArgfunctionBody,
+    oneArgfunctionBodyError,
+
+    twoArgsfunction,
+    twoArgsfunctiontype,
+    twoArgsfunctionBody,
+    twoArgsfunctionBodyError,
 
 /* ---------------------------- elements ---------------------------- */
 
@@ -406,6 +420,56 @@ assignmentType ::=
     |   ASSIGNMENT_MODULUS
 ;
 
+/* ---- funciones ---- */
+
+function ::=
+        oneArgfunction
+    |   twoArgsfunction
+;
+
+/* -- */
+
+oneArgfunction ::=
+    oneArgfunctiontype oneArgfunctionBody
+;
+
+oneArgfunctiontype ::=
+        START
+    |   WAIT
+    |   PRINT
+;
+
+oneArgfunctionBody ::=
+    LPAR expr RPAR
+;
+
+oneArgfunctionBodyError ::=
+    error:e
+        {: syntaxError(FUNCTION_BODY_ERROR_CODE, eleft+1, FUNCTION_BODY_MESSAGE); :}  
+;
+
+/* -- */
+
+twoArgsfunction ::=
+    twoArgsfunctiontype twoArgsfunctionBody
+;
+
+twoArgsfunctiontype ::=
+        MODE
+    |   A_WRITE
+    |   D_WRITE
+;
+
+twoArgsfunctionBody ::=
+        LPAR expr COMA expr RPAR
+    |   twoArgsfunctionBodyError
+;
+
+twoArgsfunctionBodyError ::=
+    error:e
+        {: syntaxError(FUNCTION_BODY_TWO_ARGS_ERROR_CODE, eleft+1, FUNCTION_BODY_TWO_ARGS_ERROR_MESSAGE); :}  
+;
+
 /* ---------------------------- elements ---------------------------- */
 
 /* -- */
@@ -427,6 +491,7 @@ stmtList ::=
 stmt ::=
         declaration SEMI
     |   assignment SEMI
+    |   function SEMI
     |   stmtError
 ;
 
@@ -434,6 +499,8 @@ stmtError ::=
         declaration:e
             {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :} 
     |   assignment:e
+            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}   
+    |   function:e
             {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}      
     |   error:e
             {: syntaxError(NOT_A_STATEMENT_ERROR_CODE, eleft+1, NOT_A_STATEMENT_MESSAGE); :}          

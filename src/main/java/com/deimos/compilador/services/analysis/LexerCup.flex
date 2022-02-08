@@ -103,10 +103,10 @@ Pin = [A-Z]{Digit}
 <YYINITIAL> "wait"               { return symbol(sym.WAIT); }
 <YYINITIAL> "print"              { return symbol(sym.PRINT); }
 <YYINITIAL> "mode"               { return symbol(sym.MODE); }
-<YYINITIAL> "aRead"               { return symbol(sym.A_READ); }
-<YYINITIAL> "dRead"               { return symbol(sym.D_READ); }
-<YYINITIAL> "aWrite"              { return symbol(sym.A_WRITE); }
-<YYINITIAL> "dWrite"              { return symbol(sym.D_WRITE); }
+<YYINITIAL> "aRead"              { return symbol(sym.A_READ); }
+<YYINITIAL> "dRead"              { return symbol(sym.D_READ); }
+<YYINITIAL> "aWrite"             { return symbol(sym.A_WRITE); }
+<YYINITIAL> "dWrite"             { return symbol(sym.D_WRITE); }
 
 <YYINITIAL> {
 
