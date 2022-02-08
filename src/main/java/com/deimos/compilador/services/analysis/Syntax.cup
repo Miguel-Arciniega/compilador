@@ -42,6 +42,8 @@ private static final String NOT_A_FUNCTION_ERROR_CODE = "013";
 private static final String PROGRAM_BODY_ERROR_CODE = "014";
 private static final String BLOCK_ERROR_ERROR_CODE = "015";
 private static final String FUNCTION_BODY_TWO_ARGS_ERROR_CODE = "016";
+private static final String IF_COND_EXPECTED_ERROR_CODE = "017";
+private static final String IF_BAD_SYNTAX_ERROR_CODE = "018";
 
 private static final String NOT_A_STATEMENT_MESSAGE = "Not a statement";
 private static final String NOT_A_DECLARATION_MESSAGE = "Not a declaration";
@@ -58,6 +60,8 @@ private static final String NOT_A_FUNCTION_MESSAGE = "Bad syntax < function_name
 private static final String PROGRAM_BODY_ERROR_MESSAGE = "Bad syntax < program id { ... } > Expected";
 private static final String BLOCK_ERROR_MESSAGE = "Bad syntax < { ... } > Block Expected";
 private static final String FUNCTION_BODY_TWO_ARGS_ERROR_MESSAGE = "Bad syntax < (value, value) > Expected";
+private static final String IF_COND_EXPECTED_ERROR_MESSAGE = "Bad syntax < ( bool expr ) > Expected";
+private static final String IF_BAD_SYNTAX_ERROR_MESSAGE = "Bad syntax < if ( bool expr ) { ... } > Expected";
 
 :}
 
@@ -185,6 +189,11 @@ non terminal
     returnFunctionType,
     returnFunctionBody,
 
+    if_statement,
+    if_statementSignature,
+    if_statementCond,
+    if_statementCondError,
+
 /* ---------------------------- elements ---------------------------- */
 
     block,
@@ -193,9 +202,10 @@ non terminal
     stmt,
     stmtError,
 
+    condList,
+    cond,
     expr,
 
-    exprValue,
     value
 ;
 
@@ -444,7 +454,8 @@ oneArgfunctiontype ::=
 ;
 
 oneArgfunctionBody ::=
-    LPAR expr RPAR
+        LPAR expr RPAR
+    |   oneArgfunctionBodyError   
 ;
 
 oneArgfunctionBodyError ::=
@@ -489,9 +500,36 @@ returnFunctionBody ::=
     oneArgfunctionBody
 ;
 
-/* ---------------------------- elements ---------------------------- */
+/* ---- if_statement ---- */
+
+if_statement ::=
+    if_statementSignature block 
+;
 
 /* -- */
+
+if_statementSignature ::=
+        IF if_statementCond
+;
+
+if_statementCond ::=
+        LPAR condList RPAR
+    |   if_statementCondError 
+;
+
+if_statementCondError ::=
+        LPAR:e RPAR
+            {: syntaxError(IF_COND_EXPECTED_ERROR_CODE, eleft+1, IF_COND_EXPECTED_ERROR_MESSAGE); :}  
+    |   error:e
+            {: syntaxError(IF_BAD_SYNTAX_ERROR_CODE, eleft+1, IF_BAD_SYNTAX_ERROR_MESSAGE); :}   
+;
+
+/* -- */
+
+if_statementCond ::=
+;
+
+/* ---------------------------- elements ---------------------------- */
 
 block ::=
         LBRACKET stmtList RBRACKET/*
@@ -511,6 +549,7 @@ stmt ::=
         declaration SEMI
     |   assignment SEMI
     |   function SEMI
+    |   if_statement
     |   stmtError
 ;
 
@@ -523,6 +562,24 @@ stmtError ::=
             {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}      
     |   error:e
             {: syntaxError(NOT_A_STATEMENT_ERROR_CODE, eleft+1, NOT_A_STATEMENT_MESSAGE); :}          
+;
+
+/* -- */
+
+condList ::=
+        cond OR condList
+    |   cond AND condList
+    |   cond
+;
+
+cond ::=
+        expr EQUAL_TO expr        
+    |   expr NOT_EQUAL expr        
+    |   expr GREATER_THAN expr
+    |   expr LESS_THAN expr
+    |   expr GREATHER_THAN_OR_EQUAL_TO expr
+    |   expr LESS_THAN_OR_EQUAL_TO expr
+    |   LPAR expr RPAR                    
 ;
 
 /* -- */
