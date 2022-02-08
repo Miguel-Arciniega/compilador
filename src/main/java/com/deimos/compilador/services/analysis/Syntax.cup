@@ -177,6 +177,7 @@ non terminal
 
     expr,
 
+    exprValue,
     value
 ;
 
@@ -383,7 +384,7 @@ declarationType ::=
 /* ---- assignment ---- */
 
 assignment ::=
-        IDENTIFIER assignmentType value
+        IDENTIFIER assignmentType expr
     |   assignmentError
 ;
 
@@ -426,7 +427,6 @@ stmtList ::=
 stmt ::=
         declaration SEMI
     |   assignment SEMI
-    |   expr SEMI
     |   stmtError
 ;
 
@@ -434,9 +434,7 @@ stmtError ::=
         declaration:e
             {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :} 
     |   assignment:e
-            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}   
-    |   expr:e
-            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}         
+            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}      
     |   error:e
             {: syntaxError(NOT_A_STATEMENT_ERROR_CODE, eleft+1, NOT_A_STATEMENT_MESSAGE); :}          
 ;
@@ -452,7 +450,7 @@ expr ::=
     |   SUBTRACTION expr
   	        %prec SUBTRACTION       
     |   LPAR expr RPAR	         
-    |   INTEGER_LITERAL	                     
+    |   value	                     
 ;
 
 /* -- */
