@@ -188,7 +188,7 @@ Pin = [A-Z]{Digit}
 // --- Invalid Number
 
 [0]{Digit}+                                     { addLexicalError(INVALID_NUMBER_ERROR_CODE, yyline+1, INVALID_NUMBER_MESSAGE, yytext()); return symbol(sym.INVALID_NUMBER); }
-[\n][^\"\n]*[\"][^\"\n]*[\n]                    { addLexicalError(INVALID_CHARACTER_ERROR_CODE, yyline+1, UNCLOSED_STRING_MESSAGE, yytext()); return symbol(sym.ERROR); }
+[\n][^\"\n]*[\"][^\"\n]*[\n]                    { addLexicalError(INVALID_CHARACTER_ERROR_CODE, yyline+2, UNCLOSED_STRING_MESSAGE, yytext()); return symbol(sym.ERROR); }
 
 // --- Invalid Character
 

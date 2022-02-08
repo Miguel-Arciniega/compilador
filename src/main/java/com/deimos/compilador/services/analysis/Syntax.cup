@@ -37,19 +37,25 @@ private static final String ITERATE_FUNCTION_EXPECTED_ERROR_CODE = "008";
 private static final String EXPECTED_IDENTIFIER_ERROR_CODE = "009";
 private static final String EXPECTED_PROGRAM_KEYWORD_ERROR_CODE = "010";
 private static final String VALUE_EXPECTED_ERROR_CODE = "011";
-private static final String FUNCTION_BODY_ERROR = "012";
+private static final String FUNCTION_BODY_ERROR_CODE = "012";
+private static final String NOT_A_FUNCTION_ERROR_CODE = "013";
+private static final String PROGRAM_BODY_ERROR_CODE = "014";
+private static final String BLOCK_ERROR_ERROR_CODE = "015";
 
 private static final String NOT_A_STATEMENT_MESSAGE = "Not a statement";
 private static final String NOT_A_DECLARATION_MESSAGE = "Not a declaration";
 private static final String EXPECTED_SEMI_COLON_MESSAGE = "<;> Expected";
 private static final String MISSING_CLOSING_BRACKET_MESSAGE = "<}> Expected";
-private static final String MAIN_PROGRAM_EXPECTED_MESSAGE = "<main> Program Expected";
+private static final String MAIN_PROGRAM_EXPECTED_MESSAGE = "<program { ... }> main program Expected";
 private static final String INIT_FUNCTION_EXPECTED_MESSAGE = "<init> Function Expected";
 private static final String ITERATE_FUNCTION_EXPECTED_MESSAGE = "<iterate> Function Expected";
 private static final String EXPECTED_IDENTIFIER_MESSAGE = "<identifier> Expected";
 private static final String EXPECTED_PROGRAM_KEYWORD_MESSAGE = "<program> Keyword Expected";
-private static final String VALUE_EXPECTED_MESSAGE = "<value> Expected";
+private static final String VALUE_EXPECTED_MESSAGE = "Bad syntax <value> Expected";
 private static final String FUNCTION_BODY_MESSAGE = "Bad syntax < (value) > Expected";
+private static final String NOT_A_FUNCTION_MESSAGE = "Bad syntax < function_name() > Expected";
+private static final String PROGRAM_BODY_ERROR_MESSAGE = "Bad syntax < program id { ... } > Expected";
+private static final String BLOCK_ERROR_MESSAGE = "Bad syntax < { ... } > Block Expected";
 
 :}
 
@@ -120,179 +126,273 @@ terminal
 ;
 
 non terminal
+
+/* ---------------------------- main ---------------------------- */
+
     mainProgram,
     mainProgramError,
-
     mainProgramSignature,
     mainProgramSignatureError,
 
-    mainProgramBody,
-    mainProgramBodyError,
+    mainBlock,
+    mainBlockError,
+
+    mainStmtList,
+    mainStmtListError,
+
+    mainStmtList1,
+    mainStmtList1Error,
+    mainStmtList2,
+    mainStmtList2Error,
+    mainStmtListGd,
 
     mainInit,
-    initBody,
+    mainInitError,
+    mainInitSignature,
+    mainInitSignatureError,
+
     mainIteration,
-    iterationBody,
+    mainIterationError,
+    mainIterationSignature,
+    mainIterationSignatureError,
 
-    globalVariable,
-    globalVariables,
-    globaldeclarationError,
+    globalDeclarationList,
+    globalDeclaration,
+    globalDeclarationError,
 
-    stmts,
-    stmtError,
-
-    assignment,
-    assignmentType,
+/* ---------------------------- stmts ---------------------------- */
 
     declaration,
     declarationType,
-    declarationBody,
-    declarationAssignment,
 
-    value,
-    valueRead,
-    valueReadError,
+    assignment,
+    assignmentError,
+    assignmentType,
 
-    function,
-    functionType,
-    functionBody,
-    functionType2,
-    functionBody2,
-    functionError
+/* ---------------------------- elements ---------------------------- */
+
+    block,
+    blockError,
+
+    stmtList,
+    stmtListError,
+    stmt,
+    stmtError,
+
+    value
 ;
 
 start with mainProgram;
 
+/* ---------------------------- main ---------------------------- */
+
 /* ---- mainProgram ---- */
 
 mainProgram ::=
-        mainProgramSignature mainProgramBody 
+        mainProgramSignature mainBlock
     |   mainProgramError
 ;
 
 mainProgramError ::=
-        mainProgramBody:e
-            {: syntaxError(EXPECTED_PROGRAM_KEYWORD_ERROR_CODE, eleft+1, EXPECTED_PROGRAM_KEYWORD_MESSAGE); 
-               syntaxError(EXPECTED_IDENTIFIER_ERROR_CODE, eleft+1, EXPECTED_IDENTIFIER_MESSAGE); :}
-    |   error:e
+        error:e
             {: syntaxError(MAIN_PROGRAM_EXPECTED_ERROR_CODE, eleft+1, MAIN_PROGRAM_EXPECTED_MESSAGE); :}
- ;
+;
+
+/* -- */
 
 mainProgramSignature ::=
-         PROGRAM IDENTIFIER 
-    |    mainProgramSignatureError
+        PROGRAM IDENTIFIER
+    |   mainProgramSignatureError
 ;
 
 mainProgramSignatureError ::=
-        IDENTIFIER:e
-            {: syntaxError(EXPECTED_PROGRAM_KEYWORD_ERROR_CODE, eleft+1, EXPECTED_PROGRAM_KEYWORD_MESSAGE); :} 
-    |   PROGRAM:e
+        PROGRAM:e
             {: syntaxError(EXPECTED_IDENTIFIER_ERROR_CODE, eleft+1, EXPECTED_IDENTIFIER_MESSAGE); :}
+    |   IDENTIFIER:e
+            {: syntaxError(EXPECTED_PROGRAM_KEYWORD_ERROR_CODE, eleft+1, EXPECTED_PROGRAM_KEYWORD_MESSAGE); :}
 ;
 
-mainProgramBody ::=
-        LBRACKET globalVariables mainInit globalVariables mainIteration globalVariables RBRACKET
-    |   LBRACKET globalVariables mainIteration globalVariables mainInit globalVariables RBRACKET
-    |   mainProgramBodyError
+/* ---- mainBlock ---- */
+
+mainBlock ::= 
+        LBRACKET mainStmtList
+    |   mainBlockError      
 ;
 
-mainProgramBodyError ::=
-        LBRACKET:e globalVariables mainInit globalVariables RBRACKET
-            {: syntaxError(ITERATE_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, ITERATE_FUNCTION_EXPECTED_MESSAGE); :}
-    |   LBRACKET:e globalVariables mainIteration globalVariables RBRACKET
-            {: syntaxError(INIT_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, INIT_FUNCTION_EXPECTED_MESSAGE); :}
-    |   LBRACKET:e globalVariables RBRACKET
-            {: syntaxError(ITERATE_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, ITERATE_FUNCTION_EXPECTED_MESSAGE);
-               syntaxError(INIT_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, INIT_FUNCTION_EXPECTED_MESSAGE); :}
+mainBlockError ::=
+        mainStmtList:e
+            {: syntaxError(BLOCK_ERROR_ERROR_CODE, eleft+1, BLOCK_ERROR_MESSAGE); :}    
 ;
 
-/* ---- globalVariables ---- */
+/* ---- mainStmtList ---- */
 
-globalVariables ::=
-        globalVariable globalVariables
-    |   /* empty */
+mainStmtList ::=
+        mainStmtListGd mainInit mainStmtListGd mainStmtList1
+    |   mainStmtListGd mainIteration mainStmtListGd mainStmtList2
+    |   mainStmtListError         
 ;
 
-globalVariable ::=
-        declaration SEMI
-    |   globaldeclarationError
+mainStmtListError ::=
+        mainStmtListGd mainInit:e mainStmtListGd RBRACKET
+                {: syntaxError(ITERATE_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, ITERATE_FUNCTION_EXPECTED_MESSAGE); :}
+    |   mainStmtListGd mainIteration:e mainStmtListGd RBRACKET
+                {: syntaxError(INIT_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, INIT_FUNCTION_EXPECTED_MESSAGE); :}
+    |   mainStmtListGd:e RBRACKET
+                {: syntaxError(INIT_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, INIT_FUNCTION_EXPECTED_MESSAGE);
+                   syntaxError(ITERATE_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, ITERATE_FUNCTION_EXPECTED_MESSAGE); :}
+    |   mainStmtListGd mainInit mainStmtListGd:e
+                {: syntaxError(ITERATE_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, ITERATE_FUNCTION_EXPECTED_MESSAGE);
+                   syntaxError(MISSING_CLOSING_BRACKET_ERROR_CODE, eleft+1, MISSING_CLOSING_BRACKET_MESSAGE); :}    
+    |   mainStmtListGd mainIteration mainStmtListGd:e 
+                {: syntaxError(INIT_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, INIT_FUNCTION_EXPECTED_MESSAGE);
+                   syntaxError(MISSING_CLOSING_BRACKET_ERROR_CODE, eleft+1, MISSING_CLOSING_BRACKET_MESSAGE); :}    
+    |   mainStmtListGd:e
+                {: syntaxError(INIT_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, INIT_FUNCTION_EXPECTED_MESSAGE);
+                   syntaxError(ITERATE_FUNCTION_EXPECTED_ERROR_CODE, eleft+1, ITERATE_FUNCTION_EXPECTED_MESSAGE);
+                   syntaxError(MISSING_CLOSING_BRACKET_ERROR_CODE, eleft+1, MISSING_CLOSING_BRACKET_MESSAGE); :}                     
 ;
 
-globaldeclarationError ::=
-        declaration:e
-            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}
-    |   error:e
-            {: syntaxError(NOT_A_DECLARATION_ERROR_CODE, eleft+1, NOT_A_DECLARATION_MESSAGE); :} 
+/* -- */
+
+mainStmtList1::=
+        mainIteration mainStmtListGd RBRACKET
+    |   mainStmtList1Error
+;
+
+mainStmtList1Error ::=
+        mainIteration mainStmtListGd:e
+                {: syntaxError(MISSING_CLOSING_BRACKET_ERROR_CODE, eleft+1, MISSING_CLOSING_BRACKET_MESSAGE); :}    
+;
+
+/* -- */
+
+mainStmtList2::=
+        mainInit mainStmtListGd RBRACKET
+    |   mainStmtList2Error
+;
+
+mainStmtList2Error ::=
+        mainInit mainStmtListGd:e
+                {: syntaxError(MISSING_CLOSING_BRACKET_ERROR_CODE, eleft+1, MISSING_CLOSING_BRACKET_MESSAGE); :}    
+;
+
+/* -- */
+
+mainStmtListGd ::=
+        globalDeclarationList
+    |   /* Empty */
 ;
 
 /* ---- mainInit ---- */
 
-mainInit ::=
-        INIT LPAR RPAR LBRACKET initBody
+mainInit  ::=
+        mainInitSignature block/*
+    |   mainInitError        */
+;
+/*
+mainInitError ::=
+        mainInitSignature:e
+            {: syntaxError(BLOCK_ERROR_ERROR_CODE, eleft+1, BLOCK_ERROR_MESSAGE); :}
+;*/
+
+/* -- */
+
+mainInitSignature ::=
+        INIT LPAR RPAR
+    |   mainInitSignatureError
 ;
 
-initBody ::=
-        stmts initBody
-    |   RBRACKET
+mainInitSignatureError ::=
+        INIT:e LPAR
+            {: syntaxError(NOT_A_FUNCTION_ERROR_CODE, eleft+1, NOT_A_FUNCTION_MESSAGE); :}
+    |   INIT:e RPAR
+            {: syntaxError(NOT_A_FUNCTION_ERROR_CODE, eleft+1, NOT_A_FUNCTION_MESSAGE); :}    
+    |   INIT:e    
+            {: syntaxError(NOT_A_FUNCTION_ERROR_CODE, eleft+1, NOT_A_FUNCTION_MESSAGE); :}    
 ;
 
 /* ---- mainIteration ---- */
 
-mainIteration ::=
-        ITERATE LPAR RPAR LBRACKET iterationBody
+mainIteration  ::=
+        mainIterationSignature block/*
+    |   mainIterationError*/        
 ;
 
-iterationBody ::=
-        stmts iterationBody
-    |   RBRACKET
+/*
+mainIterationError ::=
+        mainIterationSignature:e
+            {: syntaxError(BLOCK_ERROR_ERROR_CODE, eleft+1, BLOCK_ERROR_MESSAGE); :}
+;
+/*
+
+/* -- */
+
+mainIterationSignature ::=
+        ITERATE LPAR RPAR
+    |   mainIterationSignatureError
 ;
 
-/* ---- stmts ---- */
+mainIterationSignatureError ::=
+        ITERATE:e LPAR
+            {: syntaxError(NOT_A_FUNCTION_ERROR_CODE, eleft+1, NOT_A_FUNCTION_MESSAGE); :}
+    |   ITERATE:e RPAR
+            {: syntaxError(NOT_A_FUNCTION_ERROR_CODE, eleft+1, NOT_A_FUNCTION_MESSAGE); :}    
+    |   ITERATE:e    
+            {: syntaxError(NOT_A_FUNCTION_ERROR_CODE, eleft+1, NOT_A_FUNCTION_MESSAGE); :}    
+;
 
-stmts ::=
+/* ---- globalDeclaration ---- */
+
+globalDeclarationList ::=
+        globalDeclaration globalDeclarationList
+    |   globalDeclaration
+;
+
+/* -- */
+
+globalDeclaration ::=
         declaration SEMI
-    |   assignment SEMI
-    |   function SEMI
-    |   stmtError
+    |   globalDeclarationError
 ;
 
-stmtError ::=
-        declaration:e
-            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}
-    |   assignment:e
-            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}
-    |   function:e
+globalDeclarationError ::=
+        declaration:e    
             {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}
     |   error:e
-            {: syntaxError(NOT_A_STATEMENT_ERROR_CODE, eleft+1, NOT_A_STATEMENT_MESSAGE); :} 
+            {: syntaxError(NOT_A_DECLARATION_ERROR_CODE, eleft+1, NOT_A_DECLARATION_MESSAGE); :}      
 ;
+
+/* ---------------------------- stmts ---------------------------- */
 
 /* ---- declaration ---- */
 
 declaration ::=
-        declarationType declarationBody
+        declarationType assignment
 ;
+
+/* -- */
 
 declarationType ::=
         INT
-    |   STRING 
+    |   STRING
     |   FLOAT
-;
-
-declarationBody ::=
-        IDENTIFIER
-    |   IDENTIFIER declarationAssignment
-;
-
-declarationAssignment ::=
-        assignmentType value
 ;
 
 /* ---- assignment ---- */
 
 assignment ::=
         IDENTIFIER assignmentType value
+    |   assignmentError
 ;
+
+
+assignmentError ::= 
+    assignmentType:e
+            {: syntaxError(EXPECTED_IDENTIFIER_ERROR_CODE, eleft+1, EXPECTED_IDENTIFIER_MESSAGE);
+               syntaxError(VALUE_EXPECTED_ERROR_CODE, eleft+1, VALUE_EXPECTED_MESSAGE); :}    
+;
+
+/* -- */
 
 assignmentType ::=
         ASSIGNMENT
@@ -303,63 +403,55 @@ assignmentType ::=
     |   ASSIGNMENT_MODULUS
 ;
 
-/* ---- function ---- */
+/* ---------------------------- elements ---------------------------- */
 
-function ::=
-        functionType functionBody
-    |   functionType2 functionBody2
-    |   functionError
+/* -- */
+
+block ::=
+        LBRACKET stmtList/*
+    |   blockError     */
+;
+/*
+blockError ::=
+        stmtList:e
+            {: syntaxError(BLOCK_ERROR_ERROR_CODE, eleft+1, BLOCK_ERROR_MESSAGE); :}  
+;*/
+
+/* -- */
+
+stmtList ::=
+        stmt stmtList
+    |   RBRACKET /*
+    |   stmtListError*/  
+;
+/*
+stmtListError ::=
+        stmt:e
+            {: syntaxError(MISSING_CLOSING_BRACKET_ERROR_CODE, eleft+1, MISSING_CLOSING_BRACKET_MESSAGE); :}  
+;*/
+
+/* -- */
+
+stmt ::=
+        declaration SEMI
+    |   assignment SEMI
+    |   stmtError
 ;
 
-functionType ::=
-        START
-    |   WAIT
-    |   PRINT
+stmtError ::=
+        declaration:e
+            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :} 
+    |   assignment:e
+            {: syntaxError(EXPECTED_SEMI_COLON_ERROR_CODE, eleft+1, EXPECTED_SEMI_COLON_MESSAGE); :}         
+    |   error:e
+            {: syntaxError(NOT_A_STATEMENT_ERROR_CODE, eleft+1, NOT_A_STATEMENT_MESSAGE); :}          
 ;
 
-functionType2 ::=
-        MODE
-    |   A_WRITE
-    |   D_WRITE
-;
-
-functionBody ::=
-        LPAR value RPAR
-;
-
-functionBody2 ::=
-        LPAR value COMA value RPAR
-;
-
-functionError ::=
-        functionType error:e
-            {: syntaxError(FUNCTION_BODY_ERROR, eleft+1, FUNCTION_BODY_MESSAGE); :} 
-     |  functionType2 error:e
-            {: syntaxError(FUNCTION_BODY_ERROR, eleft+1, FUNCTION_BODY_MESSAGE); :} 
-;
-
-/* Values */
+/* -- */
 
 value ::=
         INTEGER_LITERAL
     |   STRING_LITERAL
     |   IDENTIFIER
-    |   valueRead
-;
-
-valueRead ::=
-        A_READ LPAR PIN RPAR
-    |   D_READ LPAR PIN RPAR
-    |   valueReadError
-;
-
-valueReadError ::=
-        A_READ LPAR:e RPAR
-            {: syntaxError(VALUE_EXPECTED_ERROR_CODE, eleft+1, VALUE_EXPECTED_MESSAGE); :}
-    |   D_READ LPAR:e RPAR
-            {: syntaxError(VALUE_EXPECTED_ERROR_CODE, eleft+1, VALUE_EXPECTED_MESSAGE); :}
-    |   A_READ:e
-            {: syntaxError(FUNCTION_BODY_ERROR, eleft+1, FUNCTION_BODY_MESSAGE); :} 
-    |   D_READ:e
-            {: syntaxError(FUNCTION_BODY_ERROR, eleft+1, FUNCTION_BODY_MESSAGE); :} 
+    |   PIN
 ;
