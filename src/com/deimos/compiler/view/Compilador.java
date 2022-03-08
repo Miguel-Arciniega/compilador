@@ -164,6 +164,7 @@ public class Compilador extends javax.swing.JFrame {
 
         scroll_panel_tree.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        jTree1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jTree1.setFocusable(false);
         jTree1.setShowsRootHandles(true);
         scroll_panel_tree.setViewportView(jTree1);
