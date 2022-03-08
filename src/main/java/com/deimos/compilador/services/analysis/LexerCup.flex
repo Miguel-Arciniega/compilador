@@ -83,30 +83,30 @@ Pin = [A-Z]{Digit}
 
 // --- Keywords
 
-<YYINITIAL> "program"            { return symbol(sym.PROGRAM); }
-<YYINITIAL> "init"               { return symbol(sym.INIT); }
-<YYINITIAL> "iterate"            { return symbol(sym.ITERATE); }
+<YYINITIAL> "program"            { return symbol(sym.PROGRAM, yytext()); }
+<YYINITIAL> "init"               { return symbol(sym.INIT, yytext()); }
+<YYINITIAL> "iterate"            { return symbol(sym.ITERATE, yytext()); }
 
-<YYINITIAL> "if"                 { return symbol(sym.IF); }
-<YYINITIAL> "else"               { return symbol(sym.ELSE); }
-<YYINITIAL> "for"                { return symbol(sym.FOR); }
-<YYINITIAL> "while"              { return symbol(sym.WHILE); }
-<YYINITIAL> "abstract"           { return symbol(sym.ABSTRACT); }
-<YYINITIAL> "boolean"            { return symbol(sym.BOOLEAN); }
-<YYINITIAL> "break"              { return symbol(sym.BREAK); }
+<YYINITIAL> "if"                 { return symbol(sym.IF, yytext()); }
+<YYINITIAL> "else"               { return symbol(sym.ELSE, yytext()); }
+<YYINITIAL> "for"                { return symbol(sym.FOR, yytext()); }
+<YYINITIAL> "while"              { return symbol(sym.WHILE, yytext()); }
+<YYINITIAL> "abstract"           { return symbol(sym.ABSTRACT, yytext()); }
+<YYINITIAL> "boolean"            { return symbol(sym.BOOLEAN, yytext()); }
+<YYINITIAL> "break"              { return symbol(sym.BREAK, yytext()); }
 
-<YYINITIAL> "int"                { return symbol(sym.INT); }
-<YYINITIAL> "string"             { return symbol(sym.STRING); }
-<YYINITIAL> "float"              { return symbol(sym.FLOAT); }
+<YYINITIAL> "int"                { return symbol(sym.INT, yytext()); }
+<YYINITIAL> "string"             { return symbol(sym.STRING, yytext()); }
+<YYINITIAL> "float"              { return symbol(sym.FLOAT, yytext()); }
 
-<YYINITIAL> "start"              { return symbol(sym.START); }
-<YYINITIAL> "wait"               { return symbol(sym.WAIT); }
-<YYINITIAL> "print"              { return symbol(sym.PRINT); }
-<YYINITIAL> "mode"               { return symbol(sym.MODE); }
-<YYINITIAL> "aRead"              { return symbol(sym.A_READ); }
-<YYINITIAL> "dRead"              { return symbol(sym.D_READ); }
-<YYINITIAL> "aWrite"             { return symbol(sym.A_WRITE); }
-<YYINITIAL> "dWrite"             { return symbol(sym.D_WRITE); }
+<YYINITIAL> "start"              { return symbol(sym.START, yytext()); }
+<YYINITIAL> "wait"               { return symbol(sym.WAIT, yytext()); }
+<YYINITIAL> "print"              { return symbol(sym.PRINT, yytext()); }
+<YYINITIAL> "mode"               { return symbol(sym.MODE, yytext()); }
+<YYINITIAL> "aRead"              { return symbol(sym.A_READ, yytext()); }
+<YYINITIAL> "dRead"              { return symbol(sym.D_READ, yytext()); }
+<YYINITIAL> "aWrite"             { return symbol(sym.A_WRITE, yytext()); }
+<YYINITIAL> "dWrite"             { return symbol(sym.D_WRITE, yytext()); }
 
 <YYINITIAL> {
 

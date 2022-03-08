@@ -28,6 +28,7 @@ import com.deimos.compilador.services.theme.LookAndFeelService;
 import com.deimos.compilador.model.errors.CompilationErrors;
 import com.deimos.compilador.utils.editor.CodeEditorUtils;
 import com.deimos.compilador.services.ErrorHandlerService;
+import com.deimos.compilador.services.analysis.VariableHandler;
 import com.deimos.compilador.utils.editor.TextLineNumber;
 import com.deimos.compilador.services.paint.PaintService;
 import com.deimos.compilador.utils.editor.FontUitls;
@@ -831,6 +832,8 @@ public class CompiladorUI extends javax.swing.JFrame {
         // Si el código no ha cambiado y el código está guardado,
         // se inicia la compilación
         if(CodeEditorUtils.hasChanged == false && CodeEditorUtils.currentFile != null){
+            
+            VariableHandler.variables.clear();
             
             // Se crea una instancia del manejador de errores
             ErrorHandlerService errorHandler = new ErrorHandlerService(new CompilationErrors());

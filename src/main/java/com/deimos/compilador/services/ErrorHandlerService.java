@@ -68,7 +68,7 @@ public class ErrorHandlerService {
     public StringBuilder start(final String code){
         
         // Se incializa la salida de consola
-        StringBuilder output = new StringBuilder();     
+        StringBuilder output = new StringBuilder();
         
         // Si hay errores se pone la bandera de error en true
         if(CollectionUtils.isNotEmpty(compilationErrors.getErrors())){

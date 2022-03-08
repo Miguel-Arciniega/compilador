@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2021 Deimos.
+ * Copyright 2022 Deimos.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,42 +26,38 @@ package com.deimos.compilador.services.analysis;
 import com.deimos.compilador.model.errors.CompilationError;
 import com.deimos.compilador.model.errors.ErrorType;
 import com.deimos.compilador.services.ErrorHandlerService;
-import java.io.StringReader;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import lombok.extern.java.Log;
 
 /**
  *
- * Starts the Lexical and Syntax Analysis
- * 
  * @author Deimos
  */
-@Log
-public class AnalysisService {
+public class VariableHandler {
     
-    private static final String PARSER_FAIL_ERROR_CODE = "000";
+    public static final HashMap<String, String> variables = new HashMap<>();
     
-    public void start(String code){   
-        
-        // Inicializa los analizadores sintáctico y léxico
-        try {
-            Syntax s = new Syntax(new LexerCup(new StringReader(code)));
-
-            // Ejecuta el analizador sintáctico y léxico
-            log.info("Iniciando el analisis\n");
-            s.parse();
-            
-            // SemanticAnalysis.start();
-            
-        } catch (NoClassDefFoundError | Exception e) {
-            
-            // Si no encuentra ninguna gramatica válida, se agrega el error de parseo
-            log.log(Level.SEVERE, "{0}\n", e.toString());
-            
-            List<CompilationError> errors = ErrorHandlerService.compilationErrors.getErrors();
-            CompilationError syntaxError = new CompilationError(PARSER_FAIL_ERROR_CODE, "An Exception Ocurred", "FATAL", ErrorType.FATAL, 1);
-            errors.add(syntaxError);
+    public static void validate(String variableId, String value, int line){
+        if(variables == null || variables.isEmpty()){
+           variables.put(variableId, value); 
+        }else{
+            if(variables.containsKey(variableId)){
+                List<CompilationError> errors = ErrorHandlerService.compilationErrors.getErrors();
+                CompilationError semanticError = new CompilationError("019", "The variable " + variableId + " has already been declared", ErrorType.SEMANTIC, line);
+                errors.add(semanticError);
+            }else{
+                variables.put(variableId, value);
+            }
         }
-    }  
+    }
+    
+    public static void validateId(String variableId, int line){
+        if (variables != null) {
+            if(!variables.containsKey(variableId) && !"OUTPUT".equals(variableId)){
+                List<CompilationError> errors = ErrorHandlerService.compilationErrors.getErrors();
+                CompilationError semanticError = new CompilationError("020", "The variable " + variableId + " has not been declared", ErrorType.SEMANTIC, line);
+                errors.add(semanticError); 
+            }   
+        }
+    }
 }

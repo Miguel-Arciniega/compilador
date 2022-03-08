@@ -3,6 +3,8 @@ package com.deimos.compilador.services.analysis;
 import com.deimos.compilador.model.errors.CompilationError;
 import com.deimos.compilador.model.errors.ErrorType;
 import com.deimos.compilador.services.ErrorHandlerService;
+import com.deimos.compilador.model.errors.statement.Statement;
+import com.deimos.compilador.services.StatementHandlerService;
 import java_cup.runtime.Symbol;
 import java.util.List;
 
@@ -26,6 +28,23 @@ private void syntaxError(String id, int line, String message){
     CompilationError syntaxError = new CompilationError(id, message, ErrorType.SYNTAX, line);
     errors.add(syntaxError);
 }
+
+private void semanticError(String id, int line, String message){
+    List<CompilationError> errors = ErrorHandlerService.compilationErrors.getErrors();
+    CompilationError semanticError = new CompilationError(id, message, ErrorType.SEMANTIC, line);
+    errors.add(semanticError);
+}
+
+private void validateDeclaration(String id, String value,  int linea){
+    VariableHandler.validate(id, value, linea);
+}
+
+
+private void validateId(String id, int linea){
+    VariableHandler.validateId(id, linea);
+}
+
+private static final String BAD_TYPE_ERROR_CODE = "021";
 
 private static final String NOT_A_STATEMENT_ERROR_CODE = "003";
 private static final String NOT_A_DECLARATION_ERROR_CODE = "004";
@@ -398,10 +417,67 @@ globalDeclarationError ::=
 /* ---- declaration ---- */
 
 declaration ::=
-        declarationType assignment
+        INT:type IDENTIFIER:id ASSIGNMENT INTEGER_LITERAL:val
+        {:
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+        :}
+    |   STRING:type IDENTIFIER:id ASSIGNMENT INTEGER_LITERAL:val
+        {:
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+          semanticError(BAD_TYPE_ERROR_CODE, idleft+1, "Bad types, string " + "cannot be converted to " + " int");    
+        :}
+    |   FLOAT:type IDENTIFIER:id ASSIGNMENT INTEGER_LITERAL:val
+        {:
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+        :}
+    |   INT:type IDENTIFIER:id ASSIGNMENT STRING_LITERAL:val
+        {:
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+          semanticError(BAD_TYPE_ERROR_CODE, idleft+1, "Bad types, int " + "cannot be converted to " + " string");    
+        :}
+    |   STRING:type IDENTIFIER:id ASSIGNMENT STRING_LITERAL:val
+        {:
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+        :}
+    |   FLOAT:type IDENTIFIER:id ASSIGNMENT STRING_LITERAL:val
+        {:
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+        :}
+    |   INT:type D_READ:id ASSIGNMENT INTEGER_LITERAL:val
+        {:
+          semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+        :}
+    |   STRING:type A_READ:id ASSIGNMENT INTEGER_LITERAL:val
+        {:
+          semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+          semanticError(BAD_TYPE_ERROR_CODE, idleft+1, "Bad types, string " + "cannot be converted to " + " int");    
+        :}
+    |   FLOAT:type PROGRAM:id ASSIGNMENT INTEGER_LITERAL:val
+        {:
+          semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+        :}
+    |   INT:type PROGRAM:id ASSIGNMENT STRING_LITERAL:val
+        {:
+          semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+          semanticError(BAD_TYPE_ERROR_CODE, idleft+1, "Bad types, int " + "cannot be converted to " + " string");    
+        :}
+    |   STRING:type A_READ:id ASSIGNMENT STRING_LITERAL:val
+        {:
+          semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+        :}
+    |   FLOAT:type PROGRAM:id ASSIGNMENT STRING_LITERAL:val
+        {:
+          semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");   
+          validateDeclaration(id.toString(), val.toString(), idleft+1);
+        :}
 ;
 
-/* -- */
+/*
 
 declarationType ::=
         INT
@@ -409,10 +485,44 @@ declarationType ::=
     |   FLOAT
 ;
 
+*/
+
 /* ---- assignment ---- */
 
 assignment ::=
-        IDENTIFIER assignmentType expr
+        IDENTIFIER:id ASSIGNMENT INTEGER_LITERAL:val
+            {: validateId(id.toString(), idleft+1); :}
+    |   IDENTIFIER:id ASSIGNMENT STRING_LITERAL:val
+            {: validateId(id.toString(), idleft+1); :}
+    |   IDENTIFIER:id assignmentType expr
+            {: validateId(id.toString(), idleft+1); :}
+    |   PROGRAM:id ASSIGNMENT INTEGER_LITERAL:val
+            {:  semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");   
+                validateId(id.toString(), idleft+1); :}
+    |   PROGRAM:id ASSIGNMENT STRING_LITERAL:val
+            {: semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");   
+                validateId(id.toString(), idleft+1); :}
+    |   PROGRAM:id assignmentType expr
+            {: semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");   
+                validateId(id.toString(), idleft+1); :}
+    |   A_READ:id ASSIGNMENT INTEGER_LITERAL:val
+            {:  semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");   
+                validateId(id.toString(), idleft+1); :}
+    |   A_READ:id ASSIGNMENT STRING_LITERAL:val
+            {: semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");   
+                validateId(id.toString(), idleft+1); :}
+    |   A_READ:id assignmentType expr
+            {: semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");   
+                validateId(id.toString(), idleft+1); :}
+    |   D_READ:id ASSIGNMENT INTEGER_LITERAL:val
+            {:  semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");   
+                validateId(id.toString(), idleft+1); :}
+    |   D_READ:id ASSIGNMENT STRING_LITERAL:val
+            {: semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");   
+                validateId(id.toString(), idleft+1); :}
+    |   D_READ:id assignmentType expr
+            {: semanticError("025", idleft+1, "A reserved word cannot be used as an identifier");   
+                validateId(id.toString(), idleft+1); :}
     |   assignmentError
 ;
 
@@ -454,13 +564,18 @@ oneArgfunctiontype ::=
 ;
 
 oneArgfunctionBody ::=
-        LPAR expr RPAR
-    |   oneArgfunctionBodyError   
+        LPAR INTEGER_LITERAL RPAR
+    |   LPAR STRING_LITERAL RPAR
+    |   LPAR IDENTIFIER:id RPAR
+        {: validateId(id.toString(), idleft+1); :}
+    |   oneArgfunctionBodyError 
+
 ;
 
 oneArgfunctionBodyError ::=
     error:e
-        {: syntaxError(FUNCTION_BODY_ERROR_CODE, eleft+1, FUNCTION_BODY_MESSAGE); :}  
+        {: semanticError("023", eleft+1, "Bad number of parameters, only one parameter is expected");     
+           // syntaxError(FUNCTION_BODY_ERROR_CODE, eleft+1, FUNCTION_BODY_MESSAGE); :}  
 ;
 
 /* -- */
@@ -478,11 +593,13 @@ twoArgsfunctiontype ::=
 twoArgsfunctionBody ::=
         LPAR expr COMA expr RPAR
     |   twoArgsfunctionBodyError
+        
 ;
 
 twoArgsfunctionBodyError ::=
     error:e
-        {: syntaxError(FUNCTION_BODY_TWO_ARGS_ERROR_CODE, eleft+1, FUNCTION_BODY_TWO_ARGS_ERROR_MESSAGE); :}  
+        {: semanticError("022", eleft+1, "Bad number of parameters, only two parameters are expected");   
+           // syntaxError(FUNCTION_BODY_TWO_ARGS_ERROR_CODE, eleft+1, FUNCTION_BODY_TWO_ARGS_ERROR_MESSAGE); :}  
 ;
 
 /* -- */
@@ -579,7 +696,15 @@ cond ::=
     |   expr LESS_THAN expr
     |   expr GREATHER_THAN_OR_EQUAL_TO expr
     |   expr LESS_THAN_OR_EQUAL_TO expr
-    |   LPAR expr RPAR                    
+    |   LPAR expr RPAR 
+    
+    |   expr EQUAL_TO INTEGER_LITERAL        
+    |   expr NOT_EQUAL INTEGER_LITERAL        
+    |   expr GREATER_THAN INTEGER_LITERAL
+    |   expr LESS_THAN INTEGER_LITERAL
+    |   expr GREATHER_THAN_OR_EQUAL_TO INTEGER_LITERAL
+    |   expr LESS_THAN_OR_EQUAL_TO INTEGER_LITERAL
+    |   LPAR INTEGER_LITERAL RPAR                    
 ;
 
 /* -- */
@@ -599,9 +724,8 @@ expr ::=
 /* -- */
 
 value ::=
-        INTEGER_LITERAL
-    |   STRING_LITERAL
-    |   IDENTIFIER
+        IDENTIFIER:id
+        {: validateId(id.toString(), idleft+1); :} 
     |   PIN
     |   returnFunction
 ;
