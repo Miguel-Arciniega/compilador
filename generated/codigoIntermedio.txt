@@ -1,0 +1,30 @@
+/////////// Código intermedio generado con el compilador SHL ////////////////
+
+int led = 9;
+int led2 = 9;
+int brillo = 2;
+int desvanecimiento = 5;
+
+void setup() {
+   pinMode(led, OUTPUT);
+
+}
+
+void loop() {
+   analogWrite(led, brillo);
+
+   brillo = brillo+desvanecimiento;
+
+   String mensaje = "cambiandobrilo";
+
+   if (brillo<=0||brillo>=255) {
+
+       desvanecimiento = -desvanecimiento;
+
+       Serial.println(mensaje);
+
+   }
+
+   delay(30);
+
+}

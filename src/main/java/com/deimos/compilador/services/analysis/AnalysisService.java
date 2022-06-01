@@ -26,6 +26,8 @@ package com.deimos.compilador.services.analysis;
 import com.deimos.compilador.model.errors.CompilationError;
 import com.deimos.compilador.model.errors.ErrorType;
 import com.deimos.compilador.services.ErrorHandlerService;
+import com.deimos.compilador.services.codigo_intermedio.CodeProcessor;
+import com.deimos.compilador.utils.FileHandler;
 import java.io.StringReader;
 import java.util.List;
 import java.util.logging.Level;
@@ -46,6 +48,17 @@ public class AnalysisService {
         
         // Inicializa los analizadores sintáctico y léxico
         try {
+            CodeProcessor codeProcessor = new CodeProcessor();
+            String codigoIntermedio = codeProcessor.processCode(code);
+
+            FileHandler fileHandler = new FileHandler("codigoIntermedio.txt", "generated");
+            fileHandler.write(codigoIntermedio);
+            
+            ProcessBuilder pb = new ProcessBuilder("Notepad.exe", fileHandler.getFile().getPath());
+            pb.start();
+            
+            log.info("Iniciando el analisis\n");
+
             Syntax s = new Syntax(new LexerCup(new StringReader(code)));
 
             // Ejecuta el analizador sintáctico y léxico

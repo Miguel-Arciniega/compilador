@@ -10,11 +10,13 @@ repositories {
 }
 
 dependencies {
-    testImplementation     'junit:junit:4.13'
-    
+
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    compile 'org.apache.commons:commons-lang3:3.0'
+    compile 'com.udojava:EvalEx:2.7'
 
+    testImplementation 'junit:junit:4.13'
     testCompileOnly 'org.projectlombok:lombok:1.18.22'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
     

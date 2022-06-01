@@ -41,6 +41,7 @@ public class StringConstants {
     public static final String RESOURCES_DIRECTORY = PROJECT_DIRECTORY.concat("\\src\\main\\java\\resources\\");
     public static final String ANALYSIS_DIRECTORY = PROJECT_DIRECTORY.concat("\\src\\main\\java\\com\\deimos\\compilador\\services\\analysis\\");
     public static final String UTIL_EDITOR_DIRECTORY = PROJECT_DIRECTORY.concat("\\src\\main\\java\\com\\deimos\\compilador\\services\\paint\\");
+    public static final String CODIGO_INTERMEDIO_DIRECTORY = PROJECT_DIRECTORY.concat("\\src\\main\\java\\com\\deimos\\compilador\\services\\codigo_intermedio\\");
     
     // Paths del proyecto
     public static final String USER_DOCUMENTS_FOLDER = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();

@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import lombok.extern.java.Log;
 
 import static com.deimos.compilador.utils.StringConstants.ANALYSIS_DIRECTORY;
+import static com.deimos.compilador.utils.StringConstants.CODIGO_INTERMEDIO_DIRECTORY;
 import static com.deimos.compilador.utils.StringConstants.PROJECT_DIRECTORY;
 import static com.deimos.compilador.utils.StringConstants.UTIL_EDITOR_DIRECTORY;
 
@@ -45,6 +46,7 @@ public class AnalysisGenerator {
     
     private static final String LEXER_CUP_FLEX_IN_ANALISYS = ANALYSIS_DIRECTORY + "LexerCup.flex";
     private static final String LEXER_PAINTER_FLEX_IN_UTIL = UTIL_EDITOR_DIRECTORY + "LexerPainter.flex";
+    private static final String LEXER_PAINTER_FLEX_IN_C_I = CODIGO_INTERMEDIO_DIRECTORY + "LexerCI.flex";
     
     private static final String SYM_JAVA_IN_PROJECT = PROJECT_DIRECTORY + "sym.java";
     private static final String SINTAX_JAVA_IN_PROJECT = PROJECT_DIRECTORY + "Syntax.java";
@@ -115,6 +117,7 @@ public class AnalysisGenerator {
             if (Files.exists(symJavaInAnalysisFile)) {
                 Files.delete(symJavaInAnalysisFile);
             }
+            
             /**
              * Mueve el archivo sym.java generado en la carpeta del projecto a
              * la carpeta de analysis
